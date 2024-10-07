@@ -381,7 +381,7 @@ const AllBookings = ({
       dayDifference = timeDifference / (1000 * 60 * 60 * 24);
     }
 
-
+    console.log(dayDifference); // Will print the result or an empty string
 
     const getDepartMessage = () => {
       if (dayDifference === "") return null;
