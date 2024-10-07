@@ -381,8 +381,6 @@ const AllBookings = ({
       dayDifference = timeDifference / (1000 * 60 * 60 * 24);
     }
 
-
-
     const getDepartMessage = () => {
       if (dayDifference === "") return null;
       if (dayDifference === 0) return { color: "#00c500" };
