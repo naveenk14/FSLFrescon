@@ -17,6 +17,8 @@ import { CircularProgress, Box } from "@mui/material";
 import airplane from "../../../../../assets/mdi_aeroplane.svg";
 import QuoteRequest from "./QuoteRequest";
 import shipbggif from "../../../../../assets/shipbg-gif.gif"
+import lineimage from '../../../../../assets/Frame 4151 (1).svg'
+import shapeimage from '../../../../../assets/Frame 2062.svg'
 
 function ShipmentTracker({
   selectedCurrency,
@@ -271,7 +273,7 @@ const displayedData = showAllData ? sortedData : sortedData?.slice(0, 4);
                   }}
                 >
                   <img
-                    src="https://www.fslgo.com/_next/static/media/pickup.f4ca650f.svg"
+                    src={lineimage}
                     alt="line"
                   />
                   {/* <img src={Vector} alt="car" className="mx-2" />
@@ -297,7 +299,7 @@ const displayedData = showAllData ? sortedData : sortedData?.slice(0, 4);
                     }}
                   >
                     <img
-                      src="https://www.fslgo.com/_next/static/media/ship.2f4cd5cc.svg"
+                      src={shapeimage}
                       alt="union"
                       className="mb-2"
                     />
@@ -321,7 +323,7 @@ const displayedData = showAllData ? sortedData : sortedData?.slice(0, 4);
                   }}
                 >
                   <img
-                    src="https://www.fslgo.com/_next/static/media/pickup.f4ca650f.svg"
+                    src={lineimage}
                     alt="line"
                   />
                   {/* <img src={Vector} alt="car" className="mx-2" />
