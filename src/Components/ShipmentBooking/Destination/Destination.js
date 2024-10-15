@@ -337,8 +337,77 @@ const Destination = ({
                 </Box>
               ) : (
                 <>
-                  {filteredSeaPorts?.length > 0 && (
-                    <div className="inner-all-port">
+                  {originPort ? (
+                    originPort?.Transport_mode !== "AIR" && filteredSeaPorts?.length > 0 &&
+                    (<div className="inner-all-port">
+                      <div>
+                        <p
+                          style={{
+                            marginBottom: 0,
+                            padding: "12px 0 8px 0",
+                            color: "#181e25",
+                            fontSize: "15px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          Sea Port{" "}
+                          <span
+                            style={{
+                              color: "rgba(103, 120, 142, 1)",
+                              fontSize: "13px",
+                              fontWeight: 400,
+                              lineHeight: "19px",
+                              letterSpacing: ".01em",
+                            }}
+                          >
+                            ( Pick up not included )
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        {filteredSeaPorts?.map((port, index) => (
+                          <div
+                            key={index}
+                            onClick={() => handleDestPortSelect(port)}
+                            ref={(el) => (divRefs.current[index] = el)}
+                            className={selectedIndex === index ? "selectedlocation" : ""}
+                            style={selectedIndex === index ? { backgroundColor: "rgb(223, 226, 233)",borderRadius:"8px" } : {}}
+                          >
+                            <Row className="justify-content-between p-2 port-all-content">
+                              <Col className="d-flex">
+                                <Row className="gap-2">
+                                  <div className="mt-1 p-1">
+                                    <CountryFlag
+                                      countryCode={port?.port_country}
+                                      className="port-flag"
+                                    />{" "}
+                                  </div>
+                                  <div>
+                                    <p className="portnamecode ">
+                                      {port?.list_value}
+                                    </p>
+                                    <p className="portCountry">
+                                      {port?.port_country}
+                                    </p>
+                                  </div>
+                                </Row>
+                              </Col>
+                              <Col style={{ marginRight: "20px" }}>
+                                <img
+                                  src={sea}
+                                  style={{
+                                    width: "24px",
+                                    height: "24px",
+                                  }}
+                                />
+                              </Col>
+                            </Row>
+                          </div>
+                        ))}
+                      </div>
+                    </div>)
+                  ):(
+                    filteredSeaPorts?.length>0 && <div className="inner-all-port">
                       <div>
                         <p
                           style={{
@@ -405,8 +474,10 @@ const Destination = ({
                         ))}
                       </div>
                     </div>
-                  )}
-                  {filteredAirPorts?.length > 0 && (
+                  )
+                  }
+                  {originPort ? (
+                    originPort?.Transport_mode !== "SEA" && filteredAirPorts?.length > 0 &&
                     <div className="inner-all-port">
                       <div>
                         <p
@@ -474,7 +545,77 @@ const Destination = ({
                         ))}
                       </div>
                     </div>
-                  )}
+                  ):
+                  (
+                    filteredAirPorts?.length>0 && <div className="inner-all-port">
+                      <div>
+                        <p
+                          style={{
+                            marginBottom: 0,
+                            padding: "12px 0 8px 0",
+                            color: "#181e25",
+                            fontSize: "15px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          Airport{" "}
+                          <span
+                            style={{
+                              color: "rgba(103, 120, 142, 1)",
+                              fontSize: "13px",
+                              fontWeight: 400,
+                              lineHeight: "19px",
+                              letterSpacing: ".01em",
+                            }}
+                          >
+                            ( Doesn't Include Pickup )
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        {filteredAirPorts?.map((port, index) => (
+                          <div
+                            key={index}
+                            onClick={() => handleDestPortSelect(port)}
+                            ref={(el) => (divRefs.current[index + filteredSeaPorts?.length] = el)}
+                            className={selectedIndex === index + filteredSeaPorts?.length ? "selectedlocation" : ""}
+                            style={selectedIndex === index + filteredSeaPorts?.length ? { backgroundColor: "rgb(223, 226, 233)",borderRadius: "8px" } : {}}
+                          >
+                            <Row className="justify-content-between p-2 port-all-content">
+                              <Col className="d-flex">
+                                <Row className="gap-2">
+                                  <div className="mt-1 p-1">
+                                    <CountryFlag
+                                      countryCode={port?.port_country}
+                                      className="port-flag"
+                                    />{" "}
+                                  </div>
+                                  <div>
+                                    <p className="portnamecode ">
+                                      {port?.list_value}
+                                    </p>
+                                    <p className="portCountry">
+                                      {port?.port_country}
+                                    </p>
+                                  </div>
+                                </Row>
+                              </Col>
+                              <Col style={{ marginRight: "20px" }}>
+                                <img
+                                  src={air}
+                                  style={{
+                                    width: "24px",
+                                    height: "24px",
+                                  }}
+                                />
+                              </Col>
+                            </Row>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                  }
                   {filteredCityPorts?.length > 0 && (
                     <div className="inner-all-port">
                       <div>
