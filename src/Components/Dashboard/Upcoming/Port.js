@@ -12,6 +12,7 @@ import { CircularProgress, Box } from "@mui/material";
 import { Select, Menu } from "antd";
 import { CalendarOutlined, CaretDownOutlined } from "@ant-design/icons";
 import shipgif from '../../../assets/shiploadinggif.gif'
+import anchor from '../../../assets/anchor.svg'
 
 const { Option } = Select;
 
@@ -250,7 +251,7 @@ export const Port = () => {
                           </Col>
                           <Col style={{ marginRight: "20px" }}>
                             <img
-                              src="https://www.fslgo.com/_next/static/media/anchor.20b5ab46.svg"
+                              src={anchor}
                               style={{
                                 width: "24px",
                                 height: "24px",
@@ -366,7 +367,7 @@ export const Port = () => {
                           </Col>
                           <Col style={{ marginRight: "20px" }}>
                             <img
-                              src="https://www.fslgo.com/_next/static/media/anchor.20b5ab46.svg"
+                              src={anchor}
                               style={{
                                 width: "24px",
                                 height: "24px",
