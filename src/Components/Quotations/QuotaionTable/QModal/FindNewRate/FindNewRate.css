@@ -616,7 +616,7 @@
 /* modal for bookingRequest */
 
 .ant-modal-content .ant-modal-body {
-  /* padding: 30px; */
+  padding: 30px;
   font-size: 14px;
   line-height: 1.5714285714285714;
   word-wrap: break-word;

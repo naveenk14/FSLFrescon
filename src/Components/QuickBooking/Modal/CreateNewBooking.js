@@ -6,25 +6,31 @@ import { useNavigate } from "react-router-dom";
 // import { CloseOutlined } from "@ant-design/icons";
 import UploadDoc from "./UploadDoc";
 import tickmark from "../../../assets/tickmark.gif";
+import { VscClose } from "react-icons/vsc";
 
 const CreateNewBooking = ({ open, close }) => {
   const [uploadDoc, setUploadDoc] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <Dialog open={open} onClose={close} fullScreen>
+    <Dialog open={open} onClose={close}>
       <div
         style={{
-          backgroundColor: "black",
-          height: "100vh",
+          // backgroundColor: "black",
+          // height: "100vh",
           alignContent: "center",
+          display: "flex",
         }}
       >
-        <div
-          className="card m-auto "
-          style={{ height: "589.93px", width: "527px" }}
-        >
-          <div className="align-self-center my-5">
+        <div className="card m-auto " style={{ width: "527px" }}>
+          <VscClose
+            size={22}
+            color="black"
+            role="button"
+            onClick={() => close(false)}
+            style={{ position: "absolute", top: "0px", right: "10px" }}
+          />
+          <div className="align-self-center my-4">
             <img
               src={tickmark}
               alt="check"
@@ -59,7 +65,7 @@ const CreateNewBooking = ({ open, close }) => {
             shipment documents for booking processing
           </p>
           <div
-            className="d-flex justify-content-center mt-5"
+            className="d-flex justify-content-center my-5"
             style={{ gap: "40px" }}
           >
             <Button
