@@ -2,6 +2,7 @@ import React from "react";
 import { Col, Modal, Row, Image, Button } from "antd";
 import "./FindNewRate.css";
 // import { useNavigate } from "react-router-dom";
+import tickmark from "../../../../../assets/tickmark.gif";
 
 function QuoteRequestModal({ showModal, onCancel, setShowReselt }) {
   // const navigate= useNavigate()
@@ -19,12 +20,7 @@ function QuoteRequestModal({ showModal, onCancel, setShowReselt }) {
     >
       <Row justify="center" align="middle">
         <Col>
-          <Image
-            src="https://www.fslgo.com/_next/static/media/credit-applied-successfully.1e2caabf.gif"
-            alt="check"
-            width={150}
-            height={150}
-          />
+          <Image src={tickmark} alt="check" width={150} height={150} />
         </Col>
         <Col>
           <Row

@@ -230,3 +230,6 @@
   padding-right: 30px;
 }
 
+.uploadDocMdl .css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+ max-width: 100% !important;
+}
