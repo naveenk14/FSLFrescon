@@ -36,10 +36,10 @@ const ProfileBase = () => {
   const [openEditModal, setOpenEditModal] = useState(false);
 
   const tabListNoTitle = [
-    {
-      key: "KeyAccount",
-      label: "Key Account Managers",
-    },
+    // {
+    //   key: "KeyAccount",
+    //   label: "Key Account Managers",
+    // },
     // {
     //   key: "SavedAddresses",
     //   label: "Saved Addresses",
@@ -86,7 +86,7 @@ const ProfileBase = () => {
   ];
 
   const contentListNoTitle = {
-    KeyAccount: <KeyAccountManagers profileData={profileData} />,
+    // KeyAccount: <KeyAccountManagers profileData={profileData} />,
     // SavedAddresses: <Addresses />,
     // Transactions: <Transactions />,
     Password: <Password />,
