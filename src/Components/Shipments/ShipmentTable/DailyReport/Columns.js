@@ -39,7 +39,7 @@ const Android12Switch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const Columns = ({ setfiltercolumn, ColumnObject, DsrColumns, columnOrder, comparisonResult,checked , setChecked }) => {
+const Columns = ({ setfiltercolumn, ColumnObject, DsrColumns, columnOrder, comparisonResult,checked , setChecked, setSidebaropen}) => {
   // const DsrColumns = DsrReportdatas?.columns
   // console.log(DsrColumns)
   // const ColumnObject = DsrColumns.reduce((o, key) => ({ ...o, [key]: true}), {})
@@ -405,18 +405,48 @@ const Columns = ({ setfiltercolumn, ColumnObject, DsrColumns, columnOrder, compa
     //   template:<ColumnLabelsTemplate />
     // },
   ];
+  const modalref = useRef()
 
+  useEffect(() => {
+    const handler = (e) => {
+      console.log(e.target)
+      if (modalref?.current?.contains(e.target)) {
+        console.log("success");
+        setSidebaropen(false)
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  });
   return (
-    <Menu
-      model={items}
-      className="w-full md:w-15rem"
-      style={{
-        position: "absolute",
-        top: "20px",
-        right: "20px",
-        zIndex: "999",
-      }}
-    />
+    <>  
+      <div ref={modalref} style={{position:"fixed",top:"0",left:"0",bottom:"0",right:"0"}}></div> 
+      <Menu
+        model={items}
+        className="w-full md:w-15rem"
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          zIndex: "999",
+        }}
+      />
+        </>
+
+    // <Menu
+    //   model={items}
+    //   className="w-full md:w-15rem"
+    //   style={{
+    //     position: "absolute",
+    //     top: "20px",
+    //     right: "20px",
+    //     zIndex: "999",
+    //   }}
+    // />
   );
 };
 

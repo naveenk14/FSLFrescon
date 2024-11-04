@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 const ProfileTable = ({tabListNoTitle,contentListNoTitle,setOpen}) => {
 
-    const [activeTabKey, setActiveTabKey] = useState('KeyAccount');
+    const [activeTabKey, setActiveTabKey] = useState('Password');
         const onTab2Change = (key) => {
                 setActiveTabKey(key);
     };
