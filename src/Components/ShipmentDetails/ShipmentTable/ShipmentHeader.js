@@ -147,6 +147,181 @@ const ShipmentHeader = ({ rowDatas }) => {
     manageIcons();
   };
 
+  const EstimatedDepartureTemplate = (rowData) => {
+    const {
+      actual_departure,
+      estimated_departure,
+    } = rowData;
+    // Variable to store the result
+    let dayDifference = "";
+
+    // Check if either date is empty
+    if (actual_departure && estimated_departure) {
+      // Convert to Date objects
+      const actualDate = new Date(actual_departure);
+      const estimatedDate = new Date(estimated_departure);
+
+      // Calculate the time difference in milliseconds
+      const timeDifference = actualDate - estimatedDate;
+
+      // Convert milliseconds to days
+      dayDifference = timeDifference / (1000 * 60 * 60 * 24);
+    }
+
+    const getDepartMessage = () => {
+      if (dayDifference === "") return null;
+      if (dayDifference === 0) return { color: "#00c500" };
+      if (dayDifference > 0) return { color: "red" };
+      if (dayDifference < 0) return { color: "#00c500" };
+    };
+
+    const departInfo = getDepartMessage();
+    const EtdTitle = () => {
+      if (dayDifference === "") return null;
+      if (dayDifference === 0) return <div>Departed On-time</div>;
+      if (dayDifference > 0)
+        return (
+          <div>
+            Departed Late{" "}
+            {/* <span style={{ color: "red", fontWeight: "700" }}>
+              {" "}
+              (+{dayDifference} days)
+            </span> */}
+          </div>
+        );
+      if (dayDifference < 0)
+        return (
+          <div>
+            Departed Early{" "}
+            {/* <span style={{ color: "#00c500", fontWeight: "700" }}>
+              ({dayDifference} days)
+            </span> */}
+          </div>
+        );
+    };
+    return (
+      <div className="message">
+        <span
+          style={{
+            color: departInfo ? departInfo.color : "",
+            fontWeight: "500",
+          }}
+        >
+          {departInfo ? (
+            <Tooltip
+              overlayStyle={{zIndex:"9999"}}
+              placement="topLeft"
+              title={
+                <span>
+                  <div style={{ fontSize: "13px" }}>{EtdTitle()}</div>
+                  <div style={{ fontSize: "10px" }}>
+                    {/* {rowData?.updated_message} */}
+                    Estimated Departure : {rowData.estimated_departure} <br />
+                    Actual Departure : {rowData.actual_departure}
+                  </div>
+                </span>
+              }
+            >
+              <span role="button" style={{color:"#384656"}} >{rowData?.etd_atd}{" "}
+                <span style={{fontSize:"11px",fontWeight:"700",color:dayDifference > 0 ? "red" : "#00c500"}}>
+                {dayDifference > 0 ? ` (+ ${dayDifference} days)`:(dayDifference == 0 || "") ?"(On-time)":` (${dayDifference} days)`}</span>
+                </span>
+            </Tooltip>
+          ) : (
+            rowData?.etd_atd
+          )}
+        </span>
+      </div>
+    );
+  };
+
+  const EstimatedArrivalTemplate = (rowData) => {
+    const {
+      actuval_arrival,
+      estimated_arrival,
+    } = rowData;
+    // Variable to store the result
+    let dayDifference = "";
+
+    // Check if either date is empty
+    if (actuval_arrival && estimated_arrival) {
+      // Convert to Date objects
+      const actualDate = new Date(actuval_arrival);
+      const estimatedDate = new Date(estimated_arrival);
+
+      // Calculate the time difference in milliseconds
+      const timeDifference = actualDate - estimatedDate;
+
+      // Convert milliseconds to days
+      dayDifference = timeDifference / (1000 * 60 * 60 * 24);
+    }
+
+    console.log(dayDifference); // Will print the result or an empty string
+    const getArrivalMessage = () => {
+      if (dayDifference === "") return null;
+      if (dayDifference === 0) return { color: "#00c500" };
+      if (dayDifference > 0) return { color: "red" };
+      if (dayDifference < 0) return { color: "#00c500" };
+    };
+    const arrivalInfo = getArrivalMessage();
+    const EtaTitle = () => {
+      if (dayDifference === "") return null;
+      if (dayDifference === 0) return <div>Arrived On-time</div>;
+      if (dayDifference > 0)
+        return (
+          <div>
+            Arrived Late{" "}
+            {/* <span style={{ color: "red", fontWeight: "700" }}>
+              {" "}
+              (+{dayDifference} days)
+            </span> */}
+          </div>
+        );
+      if (dayDifference < 0)
+        return (
+          <div>
+            Arrived Early{" "}
+            {/* <span style={{ color: "#00c500", fontWeight: "700" }}>
+              ({dayDifference} days)
+            </span> */}
+          </div>
+        );
+    };
+    return (
+      <div className="message">
+        <span
+          style={{
+            color: arrivalInfo ? arrivalInfo.color : "",
+            fontWeight: "500",
+          }}
+        >
+          {arrivalInfo ? (
+            <Tooltip
+              overlayStyle={{zIndex:"9999"}}
+              placement="topLeft"
+              title={
+                <span>
+                  <div style={{ fontSize: "13px" }}>{EtaTitle()}</div>
+                  <div style={{ fontSize: "10px" }}>
+                    Estimated Arrival : {rowData.estimated_arrival} <br />
+                    Actual Arrival : {rowData.actuval_arrival}
+                  </div>
+                </span>
+              }
+            >
+              <span role="button" style={{color:"#384656"}} >{rowData?.eta_ata}
+                <span style={{fontSize: "11px",fontWeight: "700",color: dayDifference > 0 ? "red" : "#00c500"}}>
+                {dayDifference > 0 ? ` (+ ${dayDifference} days)`:(dayDifference == 0 || "") ?" (On-time)":` (${dayDifference} days)`}</span>
+                </span>
+            </Tooltip>
+          ) : (
+            rowData?.eta_ata
+          )}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <>
       <Card
@@ -298,12 +473,12 @@ const ShipmentHeader = ({ rowDatas }) => {
                   <p className="m-0">{item.booked_on}</p>
                 </div>
                 <div className="booking_content">
-                  <p className="m-0 mb-1">Estimated time of Departure</p>
-                  <p className="m-0">{item.etd_atd}</p>
+                  <p className="m-0 mb-1">ETD / ATD</p>
+                  <p className="m-0">{EstimatedDepartureTemplate(rowDatas)}</p>
                 </div>
                 <div className="booking_content">
-                  <p className="m-0 mb-1">Estimated time of Arrival</p>
-                  <p className="m-0">{item.eta_ata}</p>
+                  <p className="m-0 mb-1">ETA / ATA</p>
+                  <p className="m-0">{EstimatedArrivalTemplate(rowDatas)}</p>
                 </div>
                 <div className="booking_content">
                   <p className="m-0 mb-1">Mode</p>
