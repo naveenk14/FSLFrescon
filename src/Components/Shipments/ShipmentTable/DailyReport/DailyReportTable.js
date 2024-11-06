@@ -853,6 +853,7 @@ function DailyReportTable({
             DsrColumns={DsrModifiedArray}
             columnOrder={columnOrder}
             checked={checked}
+            setSidebaropen={setSidebaropen}
             setChecked={setChecked}
           />
         )}

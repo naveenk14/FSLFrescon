@@ -438,7 +438,7 @@ const ShipmentSummary = () => {
                       })}
                     </div>
                     <div className="col">
-                      <p className="row_head">Container Details</p>
+                      <p className="row_head">Container Number</p>
                       {newContainerArray?.length <= 1 ? (
                         <>
                           {newContainerArray.map((item, i) => {
@@ -472,7 +472,41 @@ const ShipmentSummary = () => {
                         </>
                       )}
                     </div>
-                    <div className="col"></div>
+                    <div className="col">
+                      <p className="row_head">Seal Number</p>
+                      {newContainerArray?.length <= 1 ? (
+                        <>
+                          {newContainerArray.map((item, i) => {
+                            return (
+                              <p key={i} className="row_head2">
+                                {/* {item?.container} */}
+                              </p>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <>
+                          {MinContainer?.map((item, i) => (
+                            <p
+                              key={i}
+                              role="button"
+                              className="container_extrapara p-0"
+                              onClick={() => handleContOpen()}
+                            >
+                              {item?.container}...
+                            </p>
+                          ))}
+                          {/* <span
+                        role="button"
+                        style={{ color: "#00c4ff" }}
+                        className="container_extrapara"
+                        onClick={() => handleContOpen()}
+                      >
+                        Show more...
+                      </span> */}
+                        </>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   ""
