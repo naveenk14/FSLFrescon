@@ -27,13 +27,11 @@ const QuotationTabs = ({setHighlightShipmentCard,selectedDataToPatch,setSelected
   const quotationData = useSelector((state) => state?.QuotationList?.Quotation);
 
   const filterData = (status) => {
-    const dataa = data.filter((item) => status.includes(item.status));
-    console.log(dataa, "selectstatus");
     if (status === "All") {
       setFilteredData(data);
       setSelectedStatus("All");
     } else {
-      setFilteredData(dataa);
+      setFilteredData( data.filter((item) => status.includes(item.status)));
       setSelectedStatus(status);
     }
   };
@@ -57,19 +55,19 @@ const QuotationTabs = ({setHighlightShipmentCard,selectedDataToPatch,setSelected
         setCurrentPage(1);
         break;
       case "2":
-        filterData(["Active"]);
+        filterData(["ACTIVE"]);
         setCurrentPage(1);
         break;
       case "3":
-        filterData(["Booked"]);
+        filterData(["BOOKED"]);
         setCurrentPage(1);
         break;
       case "4":
-        filterData(["Expired"]);
+        filterData(["EXPIRED"]);
         setCurrentPage(1);
         break;
       case "5":
-        filterData(["Requested"]);
+        filterData(["PENDING"]);
         setCurrentPage(1);
         break;
       default:

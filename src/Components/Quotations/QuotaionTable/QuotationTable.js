@@ -259,13 +259,15 @@ const QuotationTable = ({
                 rounded
               >
                 <div>
-                  {field === "ref_id" ? "Ref Id" : ""}
+                  {field === "ref_id" ? "Quotation No" : ""}
                   {field === "load" ? "Load" : ""}
-                  {field === "eta" ? "ETA" : ""}
-                  {field === "etd" ? "ETD" : ""}
+                  {field === "tos" ? "TOS" : ""}
+                  {field === "status" ? "Action" : ""}
                   {field === "rate_validity" ? "Rate Validity" : ""}
                   {field === "origin" ? "Origin" : ""}
                   {field === "destination" ? "Destination" : ""}
+                  {field === "weight" ? "Weight" : ""}
+                  {field === "volume" ? "Volume" : ""}
                   <span className="ms-2">
                     <CloseOutlined
                       onClick={() => {
@@ -507,7 +509,7 @@ const QuotationTable = ({
       </div>
     );
   };
-  if (loading || currentPageData?.length === 0) {
+  if (loading) {
     return (
       <Box
         sx={{

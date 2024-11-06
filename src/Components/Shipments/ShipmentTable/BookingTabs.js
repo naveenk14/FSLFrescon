@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Tabs, Row, Col, Image, Tooltip } from "antd";
 import AllBookings from "./AllBookings";
 import { DsrDownloadRequest } from "../../../Redux/Actions/DsrDownloadAction";
@@ -50,12 +50,12 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
   // const saveSuccess = useSelector((state) => state?.SaveDsr?.savedsr?.Response);
 
   let schedule;
-  if (tabCount && tabCount.length > 0) {
+  if (tabCount && tabCount?.length > 0) {
     schedule = tabCount[0];
   } else {
   }
   useEffect(() => {
-    if (bookingData && bookingData.data) {
+    if (bookingData && bookingData?.data) {
       setData(bookingData?.data);
     }
   }, [bookingData]);
@@ -65,7 +65,7 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
       setFilteredData(data);
       setSelectedStatus("All");
     } else {
-      setFilteredData(data.filter((item) => status.includes(item.status)));
+      setFilteredData(data?.filter((item) => status?.includes(item?.status)));
       setSelectedStatus(status);
     }
   };
@@ -578,6 +578,7 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
               setscrollHeight={setscrollHeight}
               popoverVisible={popoverVisible}
               setPopoverVisible={setPopoverVisible}
+              bookingData={bookingData}
             />
           ) : (
             <DailyReportTable
