@@ -599,7 +599,7 @@ const AllBookings = ({
       </div>
     );
   };
-  if (loading) {
+  if (loading || paginatedData?.length === 0) {
     return (
       <Box
         sx={{
@@ -728,7 +728,7 @@ const AllBookings = ({
                     <span>
                       {filterValues[0]}&nbsp;
                       <Button
-                        style={{ backgroundColor: "red", border: "none" }}
+                        style={{ backgroundColor: "#F01E1E", border: "none" }}
                         variant="contained"
                         onClick={() => handleClick(field)}
                       >

@@ -13,6 +13,7 @@ import { Select, Menu } from "antd";
 import { CalendarOutlined, CaretDownOutlined } from "@ant-design/icons";
 import shipgif from '../../../assets/shiploadinggif.gif'
 import anchor from '../../../assets/anchor.svg'
+import { AiOutlineSwap } from "react-icons/ai";
 
 const { Option } = Select;
 
@@ -119,6 +120,15 @@ export const Port = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleSwap =()=>{
+    setSearchDestPort(searchOriginPort)
+    setSearchOriginPort(searchDestPort)
+    setDesPortCode(orgPortCode)
+    setOrgPortCode(desPortCode)
+    setOriginPort(destPort)
+    setDestPort(originPort)
+}
 
   return (
     <div
@@ -267,6 +277,7 @@ export const Port = () => {
             </div>
           )}{" "}
         </div>
+        <AiOutlineSwap role="button" className="mx-2" onClick={()=>handleSwap()} />
         <div
           className="d-flex my-2 rounded-1 focusSearch"
           style={{

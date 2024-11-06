@@ -26,6 +26,8 @@ import { CloseOutlined } from "@ant-design/icons";
 import "../../Dashboard/ShipmentHistory/ShipmentHistory.css";
 import shipgif from "../../../assets/shiploadinggif.gif";
 // import { FindNewRateRequest } from "../../../Redux/Actions/FindNewRateAction";
+import getSymbolFromCurrency from 'currency-symbol-map';
+import { MdOutlineFileDownload } from "react-icons/md";
 
 const QuotationTable = ({
   filterData,
@@ -64,8 +66,9 @@ const QuotationTable = ({
     origin: [],
     destination: [],
     load: [],
-    eta: [],
-    etd: [],
+    weight: [],
+    volume: [],
+    tos: [],
     rate_validity: [],
     status: [],
   });
@@ -98,8 +101,9 @@ const QuotationTable = ({
   const Org_ = getUniqueOptions(data, "origin");
   const dest_ = getUniqueOptions(data, "destination");
   const load_ = getUniqueOptions(data, "load");
-  const eta_ = getUniqueOptions(data, "eta");
-  const etd_ = getUniqueOptions(data, "etd");
+  const weight_ = getUniqueOptions(data, "weight");
+  const volume_ = getUniqueOptions(data, "volume");
+  const tos_ = getUniqueOptions(data, "tos");
   const rate_ = getUniqueOptions(data, "rate_validity");
   const status_ = getUniqueOptions(data, "status");
   const handleChangeFilter = (field, filterValues) => {
@@ -109,8 +113,9 @@ const QuotationTable = ({
         origin: [],
         destination: [],
         load: [],
-        eta: [],
-        etd: [],
+        weight: [],
+        volume: [],
+        tos:[],
         rate_validity: [],
         status: [],
       });
@@ -129,8 +134,9 @@ const QuotationTable = ({
         origin: [],
         destination: [],
         load: [],
-        eta: [],
-        etd: [],
+        weight: [],
+        volume: [],
+        tos: [],
         rate_validity: [],
         status: [],
       });
@@ -277,6 +283,7 @@ const QuotationTable = ({
     );
   };
   const actionBodyTemplate = (rowData) => {
+    console.log(rowData)
     let buttonLabel;
     let btnClass;
     btnClass = "cargo-picked-up";
@@ -291,8 +298,8 @@ const QuotationTable = ({
     } else if (rowData.status === "Book For $300") {
       buttonLabel = "Book For $300";
       btnClass = "dangerBtn";
-    } else if (rowData.status === "Active") {
-      buttonLabel = "Book For $300";
+    } else if (rowData.status === "ACTIVE") {
+      buttonLabel = `Book For ${getSymbolFromCurrency("KWD")} ${rowData?.quotation_amount}`;
       btnClass = "dangerBtn";
     } else if (rowData.status === "Find New Rates" || "Expired") {
       buttonLabel = (
@@ -324,22 +331,41 @@ const QuotationTable = ({
         setSelectedDataToPatch(rowData);
       }
     };
+    
+    const downloadFile = () => {
+      console.log(rowData?.quotations_link)
+      const fileUrl = rowData?.quotations_link; // The file URL from the API response
+      const link = document.createElement('a');
+      link.target= "_blank"
+      link.href = fileUrl;
+      link.setAttribute('download', 'file.pdf'); // Optionally specify the file name
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
     return (
-      <Button
-        outlined
-        className={btnClass}
-        style={{
-          background: "rgba(240, 30, 30, 1)",
-          color: "white",
-          borderRadius: "8px",
-          width: "160px",
-          height: "30px",
-          padding: "",
-          gap: "8px",
-        }}
-        label={buttonLabel}
-        onClick={hadleModalOpen}
-      />
+      <>
+        <Button
+          outlined
+          className={btnClass}
+          style={{
+            background: "rgba(240, 30, 30, 1)",
+            color: "white",
+            borderRadius: "8px",
+            width: "160px",
+            height: "30px",
+            padding: "",
+            gap: "8px",
+          }}
+          label={buttonLabel}
+          onClick={hadleModalOpen}
+        />
+        <span role="button" className="p-2" onClick={()=>downloadFile()}>
+          <MdOutlineFileDownload size={20}  />
+        </span>
+        
+      </>
     );
   };
   const shipmentTemplate = (rowData) => {
@@ -350,6 +376,7 @@ const QuotationTable = ({
     );
   };
   const originBodyTemplate = (rowData) => {
+    console.log(rowData)
     return (
       <div className="origin-cell" style={{ textAlign: "start" }}>
         <CountryFlag countryCode={rowData?.origin_countrycode} />
@@ -480,7 +507,7 @@ const QuotationTable = ({
       </div>
     );
   };
-  if (loading) {
+  if (loading || currentPageData?.length === 0) {
     return (
       <Box
         sx={{
@@ -569,7 +596,7 @@ const QuotationTable = ({
               style={{ fontFamily: "Roboto", cursor: "pointer" }}
               className="px-4 d-flex"
             >
-              Ref. ID
+              Quotation No
               {MultiSelectFilter("ref_id", refId_, tblFilter.ref_id, "Ref. ID")}
               {sort("ref_id")}
             </span>
@@ -626,24 +653,36 @@ const QuotationTable = ({
           className="p-3"
         ></Column>
         <Column
-          field="etd"
+          field="weight"
           header={
             <span className="p-3 d-flex">
-              ETD
-              {MultiSelectFilter("etd", etd_, tblFilter.etd, "ETD")}
-              {sort("etd")}
+              Weight
+              {MultiSelectFilter("weight", weight_, tblFilter.weight, "WEIGHT")}
+              {sort("weight")}
             </span>
           }
           bodyClassName="custom-cell"
           className="p-3 text-start"
         ></Column>
         <Column
-          field="eta"
+          field="volume"
           header={
             <span className="p-3 d-flex">
-              ETA
-              {MultiSelectFilter("eta", eta_, tblFilter.eta, "ETA")}
-              {sort("eta")}
+              Volume
+              {MultiSelectFilter("volume", volume_, tblFilter.volume, "VOLUME")}
+              {sort("volume")}
+            </span>
+          }
+          bodyClassName="custom-cell"
+          className="p-3 text-start"
+        ></Column>
+        <Column
+          field="tos"
+          header={
+            <span className="p-3 d-flex">
+              Tos
+              {MultiSelectFilter("tos", tos_, tblFilter.tos, "TOS")}
+              {sort("tos")}
             </span>
           }
           bodyClassName="custom-cell"
@@ -663,6 +702,7 @@ const QuotationTable = ({
               {sort("rate_validity")}
             </span>
           }
+          bodyClassName="custom-cell"
           className="text-start p-3"
         ></Column>
         <Column

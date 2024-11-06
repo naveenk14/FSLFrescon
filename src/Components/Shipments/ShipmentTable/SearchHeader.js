@@ -5,6 +5,7 @@ import "./Booking.css";
 import ShipmentBase from "../../ShipmentDetails/ShipmentTable/ShipmentBase";
 import { Dialog, DialogContent } from "@mui/material";
 import Search from "../../../assets/SearchVector.svg";
+import { FaArrowCircleRight } from "react-icons/fa";
 
 export const SearchHeader = ({ bookingData }) => {
   const [notfoundmodal, setNotfoundmodal] = useState(false);
@@ -14,7 +15,7 @@ export const SearchHeader = ({ bookingData }) => {
   const [searchHistory, setSearchHistory] = useState([]); // New state for storing search history
 
   const handleSubmit = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" || e.type === "click") {
       console.log(searchvalue);
       const filteredId = bookingData?.data?.filter(
         (item) =>
@@ -55,7 +56,7 @@ export const SearchHeader = ({ bookingData }) => {
   return (
     <>
       <Row justify="space-between" className="w-full mb-3">
-        <Col>
+        <Col className="d-flex">
           <Input
             placeholder="Search shipment by PO/ Booking / HBL / Invoice Number"
             // prefix={<SearchOutlined style={{ color: "#94A2B2" }} />}
@@ -75,6 +76,9 @@ export const SearchHeader = ({ bookingData }) => {
               border: "2px solid #E7EAF0",
               padding: "9px 11px 9px 11px",
             }}
+            suffix={
+              <FaArrowCircleRight size={20} color="red" role="button"  onClick={(e) => handleSubmit(e)} />
+            }
             value={searchvalue}
             onChange={(e) => setSearchvalue(e.target.value)}
             onKeyDown={(e) => handleSubmit(e)}

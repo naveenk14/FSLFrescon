@@ -19,6 +19,7 @@ import { profileRequest } from "../../../Redux/Actions/ProfileAction";
 import { useNavigate } from "react-router-dom";
 import { allportRequest } from "../../../Redux/Actions/AllPortAction";
 import { hover } from "@testing-library/user-event/dist/hover";
+import shipgif from "../../../assets/shiploadinggif.gif";
 
 const UpcomingSailings = ({setOriginPort,setDestPort}) => {
   const [displayedSchedules, setDisplayedSchedules] = useState(4);
@@ -30,7 +31,9 @@ const UpcomingSailings = ({setOriginPort,setDestPort}) => {
   const UpcomingData = useSelector((state) => state.Sailing);
   const originPortData = useSelector((state) => state.allPort);
   const originPortDataValue = originPortData?.allportData?.Data;
-  // const { loading, error } = useSelector((state) => state.Sailing);
+  const { loading, error } = useSelector((state) => state.Sailing);
+  const isloading = useSelector((state)=>state.OpenSailing.loading)
+  console.log(isloading)
   console.log(UpcomingData);
   useEffect(() => {
     dispatch(sailingRequest());
@@ -296,7 +299,25 @@ const UpcomingSailings = ({setOriginPort,setDestPort}) => {
     );
   };
   const sailingdataShow = () => {
-    if (sailingData?.length === 0) {
+    console.log("sdataworked")
+    console.log("loading",loading)
+    if (loading || isloading || UpcomingData.length === 0) {
+      return (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "353px",
+            // alignSelf:"center"
+          }}
+        >
+          {/* <CircularProgress style={{ color: "red" }} /> */}
+          <img src={shipgif} width="140px" height="140px" />
+        </Box>
+      );
+    }
+    else if (sailingData?.length === 0) {
       return (
         <div
           className="text-center"
@@ -311,7 +332,23 @@ const UpcomingSailings = ({setOriginPort,setDestPort}) => {
       ?.map((data, index) => renderAccordion(data, index));
   };
   const schedulesDataShow = () => {
-    if (!schedules?.length) {
+    if (loading || isloading || UpcomingData.length === 0) {
+      return (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "353px",
+            // alignSelf:"center"
+          }}
+        >
+          {/* <CircularProgress style={{ color: "red" }} /> */}
+          <img src={shipgif} width="140px" height="140px" />
+        </Box>
+      );
+    }
+    else if (!schedules?.length) {
       return (
         <div
           className="text-center"
