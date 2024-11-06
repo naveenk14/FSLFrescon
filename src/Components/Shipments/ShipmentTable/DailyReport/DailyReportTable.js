@@ -460,7 +460,7 @@ function DailyReportTable({
                     <span>
                       {filterValues[0]}&nbsp;
                       <Button
-                        style={{backgroundColor:"red",border:"none"}}
+                        style={{backgroundColor:"#F01E1E",border:"none"}}
                         variant="contained"
                         onClick={() => handleClick(field)}
                       >

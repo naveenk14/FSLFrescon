@@ -474,38 +474,29 @@ const ShipmentSummary = () => {
                     </div>
                     <div className="col">
                       <p className="row_head">Seal Number</p>
-                      {newContainerArray?.length <= 1 ? (
-                        <>
-                          {newContainerArray.map((item, i) => {
-                            return (
-                              <p key={i} className="row_head2">
-                                {/* {item?.container} */}
-                              </p>
-                            );
-                          })}
-                        </>
-                      ) : (
-                        <>
-                          {MinContainer?.map((item, i) => (
-                            <p
-                              key={i}
-                              role="button"
-                              className="container_extrapara p-0"
-                              onClick={() => handleContOpen()}
-                            >
-                              {item?.container}...
-                            </p>
-                          ))}
-                          {/* <span
-                        role="button"
-                        style={{ color: "#00c4ff" }}
-                        className="container_extrapara"
-                        onClick={() => handleContOpen()}
-                      >
-                        Show more...
-                      </span> */}
-                        </>
-                      )}
+                      {ViewBooking?.map((item) => {
+                        return (
+                          <p className="row_head2">
+                            {item?.actual_seal?.length <= 40 ? (
+                              item?.actual_seal
+                            ) : (
+                              <Tooltip
+                                placement="topLeft"
+                                zIndex={9999}
+                                title={item?.actual_seal}
+                              >
+                                <span role="button">
+                                  {item?.actual_seal
+                                    ?.slice(0, 41)
+                                    ?.trim()
+                                    ?.split("")
+                                    ?.join("") + "..."}
+                                </span>
+                              </Tooltip>
+                            )}
+                          </p>
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (
