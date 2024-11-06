@@ -599,7 +599,7 @@ const AllBookings = ({
       </div>
     );
   };
-  if (loading || paginatedData?.length === 0) {
+  if (loading) {
     return (
       <Box
         sx={{
