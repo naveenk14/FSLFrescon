@@ -39,6 +39,7 @@ const AllBookings = ({
   setscrollHeight,
   popoverVisible,
   setPopoverVisible,
+  bookingData
 }) => {
   const itemsPerPage = 5;
   const dispatch = useDispatch();
@@ -83,7 +84,7 @@ const AllBookings = ({
 
   useEffect(() => {
     const filterDataTable = filterData
-      .map((item, index) => ({
+      ?.map((item, index) => ({
         key: index,
         ...item,
       }))
@@ -809,7 +810,7 @@ const AllBookings = ({
         </div>
       )}
       <DataTable
-        value={paginatedData}
+        value={filteredData ? filteredData : bookingData?.data}
         // reorderableColumns
         // reorderableRows
         // onRowReorder={(e) => setFilteredData(e.value)}

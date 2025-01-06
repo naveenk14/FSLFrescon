@@ -19,14 +19,15 @@ import shipgif from "../../../../assets/shiploadinggif.gif";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { Button } from "primereact/button";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import DynamicColumnsTable from "./DynamicColumns";
 
 function DailyReportTable({
-  filtercolumn,
-  setfiltercolumn,
   filterReport,
   setFilterReport,
-  setdownload,
-  download,
+  // setdownload,
+  // download,
+  setSelectedColumns,
+  selectedColumns,
   dsrpopoverVisible,
   setDsrPopoverVisible
 }) {
@@ -64,16 +65,33 @@ function DailyReportTable({
   //Hooks and Variables
   const { loading } = useSelector((state) => state.DsrReport);
   const DsrReportData = useSelector((state) => state.DsrReport.dsrData);
-  const [columnOrder, setcolumnOrder] = useState([]);
+  // const [columnOrder, setcolumnOrder] = useState([]);
 
-  const DsrColumns = DsrReportData?.columns; //get column datas from dsr api response
-  const DsrDatas = DsrReportData?.data; //get datas from dsr api response
+  const columns = DsrReportData?.columns?.map((col) => ({ field: col, header: col }));
+  const datas = DsrReportData?.data;
+
+  // const [selectedColumns, setSelectedColumns] = useState(DsrReportData?.columns); // State to manage selected columns
+  const selectColumns = selectedColumns ?  selectedColumns?.map((col) => ({ field: col, header: col })): columns;
+  // Handle column reorder
+  const onColumnReorder = (e) => {
+    const reorderedColumns = e.columns.map((col) => col?.props?.field);
+    console.log(e)
+    console.log(reorderedColumns)
+    setSelectedColumns(reorderedColumns);
+};
+  console.log(columns)
+  console.log(selectColumns)
+  console.log(selectedColumns)
+  console.log(datas)
+
+  // const DsrColumns = DsrReportData?.columns; //get column datas from dsr api response
+  // const DsrDatas = DsrReportData?.data; //get datas from dsr api response
   // const clonednewArray = DsrDatas?.map((a) => ({ ...a })) || [];
   const DsrDataObj = DsrReportData?.data?.[0]; //get first for column logic
   const DsrCopied = { ...DsrDataObj }; //this copies data from previous line data
   const DsrModifiedArray = Object?.keys(DsrCopied || {}); //change objects into array
   console.log(DsrModifiedArray);
-  console.log(DsrColumns);
+  // console.log(DsrColumns);
 
   //This is modify arrayofvalues into objects with default true value
 
@@ -105,32 +123,32 @@ function DailyReportTable({
   //   {}
   // );
 
-  const ColumnObject = DsrModifiedArray?.reduce(
-    (o, key) => ({ ...o, [key]: true }),
-    {}
-  );
-  console.log(ColumnObject);
+  // const ColumnObject = DsrModifiedArray?.reduce(
+  //   (o, key) => ({ ...o, [key]: true }),
+  //   {}
+  // );
+  // console.log(ColumnObject);
 
-  let comparisonResult = {};
-  if (columnOrder.length) {
-    columnOrder?.forEach((item) => {
-      comparisonResult[item] = DsrModifiedArray?.includes(item);
-    });
-  } else {
-    DsrColumns?.forEach((item) => {
-      comparisonResult[item] = DsrModifiedArray?.includes(item);
-    });
-  }
+  // let comparisonResult = {};
+  // if (columnOrder.length) {
+  //   columnOrder?.forEach((item) => {
+  //     comparisonResult[item] = DsrModifiedArray?.includes(item);
+  //   });
+  // } else {
+  //   DsrColumns?.forEach((item) => {
+  //     comparisonResult[item] = DsrModifiedArray?.includes(item);
+  //   });
+  // }
 
-  console.log(comparisonResult);
-  const [checked, setChecked] = useState(comparisonResult);
-  console.log(checked);
+  // console.log(comparisonResult);
+  // const [checked, setChecked] = useState(comparisonResult);
+  // console.log(checked);
 
-  const TableColumnObject = DsrColumns?.reduce(
-    (o, key) => ({ ...o, [key]: true }),
-    {}
-  );
-  console.log(TableColumnObject);
+  // const TableColumnObject = DsrColumns?.reduce(
+  //   (o, key) => ({ ...o, [key]: true }),
+  //   {}
+  // );
+  // console.log(TableColumnObject);
 
   //This is for modify array of values into objects with empty array for storing datas
   const dsrfilter = DsrModifiedArray?.reduce(
@@ -138,7 +156,7 @@ function DailyReportTable({
     {}
   );
   console.log(dsrfilter);
-  const report = DsrDatas;
+  const report = datas;
   console.log(report);
   const [currentPage, setCurrentPage] = useState(1);
   const [sidebaropen, setSidebaropen] = useState(false);
@@ -149,20 +167,20 @@ function DailyReportTable({
   const itemsPerPage = 6;
   console.log(filterReport);
 
+  // useEffect(() => {
+  //   setfiltercolumn(TableColumnObject);
+  // }, [DsrColumns]);
   useEffect(() => {
-    setfiltercolumn(TableColumnObject);
-  }, [DsrColumns]);
-  useEffect(() => {
-    setFilterReport(report);
-  }, [DsrDatas]);
+    setFilterReport(datas);
+  }, [datas]);
 
-  console.log(filtercolumn);
+  // console.log(filtercolumn);
 
   //This is modify object keys and values
-  const arrayOfObj = Object.entries(filtercolumn || {})?.map((e) => ({
-    [e[0]]: e[1],
-    header: e[0],
-  }));
+  // const arrayOfObj = Object.entries(filtercolumn || {})?.map((e) => ({
+  //   [e[0]]: e[1],
+  //   header: e[0],
+  // }));
 
   useEffect(() => {
     const filterReportTbl = report?.filter((items) =>
@@ -194,54 +212,54 @@ function DailyReportTable({
   // // setFilterReport(filteredData);
   // }
 
-  const filterDataByKeys = (data) => {
-    return data?.map((item) => {
-      const filteredItem = {};
-      // allowedKeys?.forEach(key => {
-      //     if (item.hasOwnProperty(key?.header)) {
-      //         filteredItem[key?.header] = item[key?.header];
-      //     }
-      // });
-      for (const [key, value] of Object.entries(filtercolumn)) {
-        if (value === true) {
-          filteredItem[key] = item[key];
-        }
-      }
-      return filteredItem;
-    });
-  };
+  // const filterDataByKeys = (data) => {
+  //   return data?.map((item) => {
+  //     const filteredItem = {};
+  //     // allowedKeys?.forEach(key => {
+  //     //     if (item.hasOwnProperty(key?.header)) {
+  //     //         filteredItem[key?.header] = item[key?.header];
+  //     //     }
+  //     // });
+  //     for (const [key, value] of Object.entries(filtercolumn)) {
+  //       if (value === true) {
+  //         filteredItem[key] = item[key];
+  //       }
+  //     }
+  //     return filteredItem;
+  //   });
+  // };
 
   // const fdata = filterDataByKeys(filterReport, arrayOfObj);
   // console.log(fdata)
 
-  useEffect(() => {
-    const res = filterDataByKeys(filterReport);
-    setdownload(res);
-  }, [filtercolumn]);
+  // useEffect(() => {
+  //   const res = filterDataByKeys(filterReport);
+  //   setdownload(res);
+  // }, [filtercolumn]);
 
   // console.log(download)
 
-  const handleArrange = (columns) => {
-    console.log(columns);
-    const reorderedKeys = columns.map((col) => col?.props?.field);
-    console.log(reorderedKeys);
-    setcolumnOrder(reorderedKeys);
-    const columnObject = reorderedKeys?.reduce((obj, col) => {
-      obj[col] = true;
-      return obj;
-    }, {});
-    const newDownload = download.map((item) => {
-      const reorderedItem = {};
-      reorderedKeys.forEach((key) => {
-        reorderedItem[key] = item[key];
-      });
-      return reorderedItem;
-    });
-    setdownload(newDownload);
-    setfiltercolumn(columnObject);
-  };
+  // const handleArrange = (columns) => {
+  //   console.log(columns);
+  //   const reorderedKeys = columns.map((col) => col?.props?.field);
+  //   console.log(reorderedKeys);
+  //   setcolumnOrder(reorderedKeys);
+  //   const columnObject = reorderedKeys?.reduce((obj, col) => {
+  //     obj[col] = true;
+  //     return obj;
+  //   }, {});
+  //   const newDownload = download.map((item) => {
+  //     const reorderedItem = {};
+  //     reorderedKeys.forEach((key) => {
+  //       reorderedItem[key] = item[key];
+  //     });
+  //     return reorderedItem;
+  //   });
+  //   setdownload(newDownload);
+  //   setfiltercolumn(columnObject);
+  // };
 
-  const hasPageBeenRendered = useRef(false);
+  // const hasPageBeenRendered = useRef(false);
 
   // useEffect(() => {
   //   const handleArrange = (columns) => {
@@ -542,7 +560,7 @@ function DailyReportTable({
   };
 
   //This is for pagination
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  // const startIndex = (currentPage - 1) * itemsPerPage;
 
   // const paginatedData = filterReport?.slice(
   //   startIndex,
@@ -554,7 +572,7 @@ function DailyReportTable({
   //       startIndex,
   //       10
   //     );
-  const paginatedData = showAllData ? filterReport : filterReport
+  const paginatedData = filterReport
   // const noData = () => {
   //   return (
   //     <div
@@ -566,23 +584,23 @@ function DailyReportTable({
   //   );
   // };
 
-  const columnValueData = (fieldName) => (rowData) => {
-    const fieldValue = rowData[fieldName];
+  // const columnValueData = (fieldName) => (rowData) => {
+  //   const fieldValue = rowData[fieldName];
 
-    return (
-      <div style={{ width: "120px" }} className="px-1">
-        {fieldValue?.length <= 14 ? (
-          fieldValue
-        ) : (
-          <Tooltip placement="topLeft" title={fieldValue}>
-            <span>
-              {fieldValue?.slice(0, 14)?.trim()?.split(" ")?.join("") + ".."}
-            </span>
-          </Tooltip>
-        )}
-      </div>
-    );
-  };
+  //   return (
+  //     <div style={{ width: "120px" }} className="px-1">
+  //       {fieldValue?.length <= 14 ? (
+  //         fieldValue
+  //       ) : (
+  //         <Tooltip placement="topLeft" title={fieldValue}>
+  //           <span>
+  //             {fieldValue?.slice(0, 14)?.trim()?.split(" ")?.join("") + ".."}
+  //           </span>
+  //         </Tooltip>
+  //       )}
+  //     </div>
+  //   );
+  // };
 
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -683,7 +701,7 @@ function DailyReportTable({
   // const filteredDownload = filterReport?.map((item,index)=> console.log(item) )
   // console.log(filteredDownload)
 
-  if (loading) {
+  if (loading || paginatedData?.length === 0 || paginatedData == "undefined") {
     return (
       <Box
         sx={{
@@ -770,29 +788,31 @@ function DailyReportTable({
           </div>
         )}
         <DataTable
-          value={paginatedData}
+          value={filterReport ? filterReport : DsrReportData?.data}
           reorderableColumns
+          style={{minHeight:"500px"}}
+          onColReorder={(e)=>onColumnReorder(e)}
           scrollable={showAllData}
           scrollHeight={scrollHeight}
           // reorderableRows
           // onRowReorder={(e) => console.log(e)}
-          onColReorder={(e) => handleArrange(e.columns)}
           // style={{ height: "380px", width: "fit-content" }}
           // emptyMessage={noData()}
         >
-          {arrayOfObj?.map((item, index) => {
-            if (filtercolumn[item.header]) {
-              // let res = []
+          {/* {arrayOfObj?.map((item, index) => { */}
+            {/* if (filtercolumn[item.header]) { */}
+              {/* // let res = []
               // res.push(item?.header)
               // console.log(res)
 
-              // handleWholeData(item?.header)
+              // handleWholeData(item?.header) */}
 
-              return (
+              {/* return ( */}
+              {selectColumns && selectColumns?.map((item, index) => (
                 <Column
                   key={index}
-                  field={item?.header}
-                  body={columnValueData(item?.header)}
+                  field={item?.field}
+                  // body={columnValueData(item?.header)}
                   header={
                     <span className=" d-flex">
                       {item?.header}
@@ -818,9 +838,10 @@ function DailyReportTable({
                     paddingRight: "10px",
                   }}
                 />
-              );
-            }
-          })}
+              ))}
+          {/* //     );
+          //   }
+          // })} */}
         </DataTable>
 
         <div
@@ -846,16 +867,18 @@ function DailyReportTable({
           </p>
         </div>
         {sidebaropen && (
-          <Columns
-            setfiltercolumn={setfiltercolumn}
-            ColumnObject={ColumnObject}
-            comparisonResult={comparisonResult}
-            DsrColumns={DsrModifiedArray}
-            columnOrder={columnOrder}
-            checked={checked}
-            setSidebaropen={setSidebaropen}
-            setChecked={setChecked}
-          />
+          // <Columns
+          //   setfiltercolumn={setfiltercolumn}
+          //   ColumnObject={ColumnObject}
+          //   comparisonResult={comparisonResult}
+          //   DsrColumns={DsrModifiedArray}
+          //   columnOrder={columnOrder}
+          //   checked={checked}
+          //   setSidebaropen={setSidebaropen}
+          //   setChecked={setChecked}
+          // />
+          <DynamicColumnsTable setFilterReport={setFilterReport} DsrReportData={DsrReportData} setSelectedColumns={setSelectedColumns} selectedColumns={selectedColumns} />
+
         )}
       </div>
       {/* <Pagination

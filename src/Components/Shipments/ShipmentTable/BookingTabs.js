@@ -23,12 +23,16 @@ import { toast } from "react-toastify";
 
 function BookingTabs({ showText, setShowText, setShowmap }) {
   const [searchQuery] = useState("");
-  const [data, setData] = useState([]);
+  const dispatch = useDispatch();
+  const ShipmentData = useSelector((state) => state.Booking);
+  const bookingData = ShipmentData?.booking;
+  const tabCount = ShipmentData?.booking?.statuswise_count
+  const [data, setData] = useState(bookingData && bookingData?.data);
   const [schedulemodal, setSchedulemodal] = useState(false);
   const [selectedButton, setSelectedButton] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState("1");
-  const [filtercolumn, setfiltercolumn] = useState();
+  // const [filtercolumn, setfiltercolumn] = useState();
   const [isAscending, setIsAscending] = useState(true);
   const [filteredData, setFilteredData] = useState(data);
   const [selectedStatus, setSelectedStatus] = useState(null);
@@ -36,15 +40,11 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
     useState("Past 60 Days");
   const [filterValue, setFilterValue] = useState(60);
   const [filterReport, setFilterReport] = useState();
-  const [download, setdownload] = useState();
+  // const [download, setdownload] = useState();
   const [filterMonthValue, setFilterMonthValue] = useState(null);
   const [showMore, setshowMore] = useState(false)
   const [showAllData, setshowAllData] = useState(false)
   const [scrollHeight, setscrollHeight] = useState("653px")
-  const dispatch = useDispatch();
-  const ShipmentData = useSelector((state) => state.Booking);
-  const bookingData = ShipmentData?.booking;
-  const tabCount = ShipmentData?.booking?.statuswise_count
   const [popoverVisible, setPopoverVisible] = useState(false); // State to control Popover visibility
   const [dsrpopoverVisible, setDsrPopoverVisible] = useState(false); // State to control Popover visibility
   // const saveSuccess = useSelector((state) => state?.SaveDsr?.savedsr?.Response);
@@ -71,7 +71,7 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
   };
 
   useEffect(() => {
-    const newFilteredData = data.filter((item) =>
+    const newFilteredData = data?.filter((item) =>
       item.id.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredData(newFilteredData);
@@ -127,19 +127,29 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
   //   dispatch(DsrDownloadRequest({ payloadofdsrdownload }));
   // };
 
+  const DsrReportData = useSelector((state) => state.DsrReport.dsrData);
+  console.log(DsrReportData)
+  const [selectedColumns, setSelectedColumns] = useState(DsrReportData?.columns); // State to manage selected columns
+  console.log(selectedColumns)
   let sselectcolumn = "";
-  const filteredCol = Object?.keys(filtercolumn || {})?.filter(
-    (k) => filtercolumn[k]
-  );
-  const filteredColCopy = { ...filteredCol };
-  if (filteredColCopy && typeof filteredColCopy === "object") {
-    sselectcolumn = Object?.values(filteredColCopy)?.join(",");
-  } else {
-    console.error(
-      "filtercolumn is not defined or not an object:",
-      filteredColCopy
-    );
+  // const filteredCol = Object?.keys(filtercolumn || {})?.filter(
+  //   (k) => filtercolumn[k]
+  // );
+  // const filteredColCopy = { ...filteredCol };
+  // if (filteredColCopy && typeof filteredColCopy === "object") {
+  //   sselectcolumn = Object?.values(filteredColCopy)?.join(",");
+  // } else {
+  //   console.error(
+  //     "filtercolumn is not defined or not an object:",
+  //     filteredColCopy
+  //   );
+  // }
+
+  if(selectedColumns){
+    sselectcolumn = selectedColumns?.join(",")
   }
+  console.log(sselectcolumn)
+
   const payload = {
     sserialno: Profileusertoken,
     sselectcolumn: sselectcolumn,
@@ -150,7 +160,6 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
   const handleSaveDsr = (e) => {
     e.preventDefault();
     dispatch(SaveDsrReqeust({ payload }));
-    toast.success("DSR Saved Successfully");
   };
   // useEffect(() => {
   //   if (saveSuccess === "SUCCESS") {
@@ -201,8 +210,17 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
   console.log(schedule)
 
   const exportExcel = () => {
+    // Prepare data based on selected column order
+    const excelData = DsrReportData?.data?.map((row) => {
+      const orderedRow = {};
+      selectedColumns.forEach((col) => {
+          orderedRow[col] = row[col]; // Add data in the order of selected columns
+      });
+      return orderedRow;
+  });
+
     import("xlsx").then((xlsx) => {
-      const worksheet = xlsx.utils.json_to_sheet(download);
+      const worksheet = xlsx.utils.json_to_sheet(excelData);
       const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
       const excelBuffer = xlsx.write(workbook, {
         bookType: "xlsx",
@@ -210,6 +228,24 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
       });
 
       saveAsExcelFile(excelBuffer, "download");
+    });
+  };
+
+  const saveAsExcelFile = (buffer, fileName) => {
+    import("file-saver").then((module) => {
+      if (module && module.default) {
+        let EXCEL_TYPE =
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+        let EXCEL_EXTENSION = ".xlsx";
+        const data = new Blob([buffer], {
+          type: EXCEL_TYPE,
+        });
+
+        module.default.saveAs(
+          data,
+          fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
+        );
+      }
     });
   };
 
@@ -253,23 +289,23 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
   console.log(activeTab)
   console.log(showMore)
 
-  const saveAsExcelFile = (buffer, fileName) => {
-    import("file-saver").then((module) => {
-      if (module && module.default) {
-        let EXCEL_TYPE =
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-        let EXCEL_EXTENSION = ".xlsx";
-        const data = new Blob([buffer], {
-          type: EXCEL_TYPE,
-        });
+  // const saveAsExcelFile = (buffer, fileName) => {
+  //   import("file-saver").then((module) => {
+  //     if (module && module.default) {
+  //       let EXCEL_TYPE =
+  //         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  //       let EXCEL_EXTENSION = ".xlsx";
+  //       const data = new Blob([buffer], {
+  //         type: EXCEL_TYPE,
+  //       });
 
-        module.default.saveAs(
-          data,
-          fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
-        );
-      }
-    });
-  };
+  //       module.default.saveAs(
+  //         data,
+  //         fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
+  //       );
+  //     }
+  //   });
+  // };
 
   const handleUpcomingDep = () => {
     setSelectedButton("Upcoming Departures");
@@ -582,12 +618,12 @@ function BookingTabs({ showText, setShowText, setShowmap }) {
             />
           ) : (
             <DailyReportTable
-              filtercolumn={filtercolumn}
-              setfiltercolumn={setfiltercolumn}
               filterReport={filterReport}
               setFilterReport={setFilterReport}
-              setdownload={setdownload}
-              download={download}
+              // setdownload={setdownload}
+              // download={download}
+              selectedColumns={selectedColumns}
+              setSelectedColumns={setSelectedColumns}
               dsrpopoverVisible={dsrpopoverVisible}
               setDsrPopoverVisible={setDsrPopoverVisible}
             />
