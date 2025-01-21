@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -26,8 +26,10 @@ import { CloseOutlined } from "@ant-design/icons";
 import "../../Dashboard/ShipmentHistory/ShipmentHistory.css";
 import shipgif from "../../../assets/shiploadinggif.gif";
 // import { FindNewRateRequest } from "../../../Redux/Actions/FindNewRateAction";
-import getSymbolFromCurrency from 'currency-symbol-map';
+import getSymbolFromCurrency from "currency-symbol-map";
 import { MdOutlineFileDownload } from "react-icons/md";
+import { IoCloseCircleSharp } from "react-icons/io5";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 const QuotationTable = ({
   filterData,
@@ -43,6 +45,8 @@ const QuotationTable = ({
   setshowAllData,
   scrollHeight,
   setscrollHeight,
+  popoverVisible,
+  setPopoverVisible
   // setSelectedDropdownItem,
 }) => {
   const navigate = useNavigate();
@@ -53,6 +57,7 @@ const QuotationTable = ({
   const [globalFilter, setGlobalFilter] = useState("");
   const [clicked, setClicked] = useState(false);
   const [data, setData] = useState(filteredData);
+  const [selectfield, setselectfield] = useState("");
   // const [showAllData, setshowAllData] = useState(false)
   // const [scrollHeight, setscrollHeight] = useState("653px")
 
@@ -115,7 +120,7 @@ const QuotationTable = ({
         load: [],
         weight: [],
         volume: [],
-        tos:[],
+        tos: [],
         rate_validity: [],
         status: [],
       });
@@ -237,6 +242,82 @@ const QuotationTable = ({
         // startIndex + itemsPerPage
       );
   const FilterTag = ({ field, filterValues, handleChangeFilter }) => {
+    const popoverRef = useRef(null); // Reference for the popover
+    const handleClick = (field) => {
+      setselectfield(field);
+      setPopoverVisible((prev) => !prev);
+      console.log(field);
+      console.log(selectfield);
+    };
+
+    // Close the popover if clicked outside
+    useEffect(() => {
+      const handleOutsideClick = (event) => {
+        if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+          setselectfield("");
+          setPopoverVisible(false); // Close the popover if clicked outside
+        }
+      };
+
+      // Attach event listener
+      if (popoverVisible) {
+        document.addEventListener("mousedown", handleOutsideClick);
+      }
+
+      // Cleanup the event listener when popover is closed or unmounted
+      return () => {
+        document.removeEventListener("mousedown", handleOutsideClick);
+      };
+    }, [popoverVisible]);
+
+    const renderTags = (field, filterValues) => {
+      return (
+        <div
+          ref={popoverRef}
+          style={{
+            position: "absolute",
+            top: "0",
+            width: "100%",
+            background: "white",
+            zIndex: "10",
+            borderRadius: "8px",
+            boxShadow: "0 0 10px 5px rgba(0, 0, 0, 0.2)",
+            margin: "25px 0px",
+          }}
+        >
+          <ul style={{ padding: "8px", margin: "0px" }}>
+            {filterValues?.map((item, index) => {
+              return (
+                <li
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    listStyle: "none",
+                    color: "#000000c9",
+                  }}
+                  key={index}
+                >
+                  {item}{" "}
+                  <IoCloseCircleSharp
+                    role="button"
+                    onClick={() => {
+                      handleDeleteValue(field, item);
+                    }}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      );
+    };
+
+    const handleDeleteValue = (field, value) => {
+      console.log(field, value);
+      const newValues = filterValues.filter((item) => item !== value);
+      console.log(field, newValues);
+      handleChangeFilter(field, newValues);
+    };
     if (!Array.isArray(filterValues)) {
       return null;
     }
@@ -258,7 +339,7 @@ const QuotationTable = ({
                 className="px-2 py-1"
                 rounded
               >
-                <div>
+                <div style={{ position: "relative" }}>
                   {field === "ref_id" ? "Quotation No" : ""}
                   {field === "load" ? "Load" : ""}
                   {field === "tos" ? "TOS" : ""}
@@ -268,6 +349,27 @@ const QuotationTable = ({
                   {field === "destination" ? "Destination" : ""}
                   {field === "weight" ? "Weight" : ""}
                   {field === "volume" ? "Volume" : ""}
+                  &nbsp; :{" "}
+                  {filterValues?.length === 1 ? (
+                    <span className="me-2">{filterValues[0]}</span>
+                  ) : (
+                    <span>
+                      {filterValues[0]}&nbsp;
+                      <Button
+                        style={{ backgroundColor: "#F01E1E", border: "none" }}
+                        variant="contained"
+                        onClick={() => handleClick(field)}
+                      >
+                        <BsThreeDotsVertical
+                          size={10}
+                          style={{ marginBottom: "3px", marginLeft: "6px" }}
+                        />
+                      </Button>
+                      {popoverVisible &&
+                        field === selectfield &&
+                        renderTags(field, filterValues)}
+                    </span>
+                  )}
                   <span className="ms-2">
                     <CloseOutlined
                       onClick={() => {
@@ -285,7 +387,7 @@ const QuotationTable = ({
     );
   };
   const actionBodyTemplate = (rowData) => {
-    console.log(rowData)
+    console.log(rowData);
     let buttonLabel;
     let btnClass;
     btnClass = "cargo-picked-up";
@@ -301,7 +403,9 @@ const QuotationTable = ({
       buttonLabel = "Book For $300";
       btnClass = "dangerBtn";
     } else if (rowData.status === "ACTIVE") {
-      buttonLabel = `Book For ${getSymbolFromCurrency("KWD")} ${rowData?.quotation_amount}`;
+      buttonLabel = `Book For ${getSymbolFromCurrency("KWD")} ${
+        rowData?.quotation_amount
+      }`;
       btnClass = "dangerBtn";
     } else if (rowData.status === "Find New Rates" || "Expired") {
       buttonLabel = (
@@ -333,14 +437,14 @@ const QuotationTable = ({
         setSelectedDataToPatch(rowData);
       }
     };
-    
+
     const downloadFile = () => {
-      console.log(rowData?.quotations_link)
+      console.log(rowData?.quotations_link);
       const fileUrl = rowData?.quotations_link; // The file URL from the API response
-      const link = document.createElement('a');
-      link.target= "_blank"
+      const link = document.createElement("a");
+      link.target = "_blank";
       link.href = fileUrl;
-      link.setAttribute('download', 'file.pdf'); // Optionally specify the file name
+      link.setAttribute("download", "file.pdf"); // Optionally specify the file name
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -363,10 +467,9 @@ const QuotationTable = ({
           label={buttonLabel}
           onClick={hadleModalOpen}
         />
-        <span role="button" className="p-2" onClick={()=>downloadFile()}>
-          <MdOutlineFileDownload size={20}  />
+        <span role="button" className="p-2" onClick={() => downloadFile()}>
+          <MdOutlineFileDownload size={20} />
         </span>
-        
       </>
     );
   };
@@ -378,7 +481,7 @@ const QuotationTable = ({
     );
   };
   const originBodyTemplate = (rowData) => {
-    console.log(rowData)
+    console.log(rowData);
     return (
       <div className="origin-cell" style={{ textAlign: "start" }}>
         <CountryFlag countryCode={rowData?.origin_countrycode} />
@@ -391,12 +494,12 @@ const QuotationTable = ({
             textAlign: "start",
           }}
         >
-          {rowData?.origin.length <= 20 ? (
+          {rowData?.origin.length <= 12 ? (
             rowData?.origin
           ) : (
             <Tooltip placement="topLeft" title={rowData?.origin}>
               <span role="button">
-                {rowData?.origin.slice(0, 20).trim().split(" ").join("") + ".."}
+                {rowData?.origin.slice(0, 11).trim().split(" ").join("") + ".."}
               </span>
             </Tooltip>
           )}
@@ -409,12 +512,12 @@ const QuotationTable = ({
       <div className="origin-cell" style={{ textAlign: "start" }}>
         <CountryFlag countryCode={rowData?.destination_countrycode} />
         <span style={{ padding: "8px", fontWeight: "400", textWrap: "wrap" }}>
-          {rowData?.destination.length <= 20 ? (
+          {rowData?.destination.length <= 12 ? (
             rowData?.destination
           ) : (
             <Tooltip placement="topLeft" title={rowData?.destination}>
               <span role="button">
-                {rowData?.destination.slice(0, 20).trim().split("").join("") +
+                {rowData?.destination.slice(0, 11).trim().split("").join("") +
                   ".."}
               </span>
             </Tooltip>
@@ -682,7 +785,7 @@ const QuotationTable = ({
           field="tos"
           header={
             <span className="p-3 d-flex">
-              Tos
+              TOS
               {MultiSelectFilter("tos", tos_, tblFilter.tos, "TOS")}
               {sort("tos")}
             </span>

@@ -8,14 +8,18 @@ import {  CaretDownOutlined } from "@ant-design/icons";
 import cal from "../../../assets/calVector.svg";
 
 const QuotationTabs = ({setHighlightShipmentCard,selectedDataToPatch,setSelectedDataToPatch}) => {
+  const UpcomingDataList = useSelector((state) => state.QuotationList.Quotation);
+  const UpcomingData = UpcomingDataList.data;
+  console.log(UpcomingData)
   const [activeKey, setActiveKey] = useState("1");
   const [currentPage, setCurrentPage] = useState(1);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(UpcomingData && UpcomingData);
   const [filteredData, setFilteredData] = useState(data);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [showMore, setshowMore] = useState(false)
   const [showAllData, setshowAllData] = useState(false)
   const [scrollHeight, setscrollHeight] = useState("653px")
+  const [popoverVisible, setPopoverVisible] = useState(false); // State to control Popover visibility
   const [selectedDropdownItem, setSelectedDropdownItem] =
     useState("Past 30 Days");
     const items = [
@@ -79,7 +83,7 @@ const QuotationTabs = ({setHighlightShipmentCard,selectedDataToPatch,setSelected
     window.scrollTo(0, 0);
   }, []);
   const tabs = [
-    { label: `All Bookings (${data?.length})`, key: "1" },
+    { label: `All Quotations (${data?.length})`, key: "1" },
     {
       label: `Active (0)`,
       key: "2",
@@ -212,6 +216,8 @@ const QuotationTabs = ({setHighlightShipmentCard,selectedDataToPatch,setSelected
             setshowAllData={setshowAllData}
             scrollHeight={scrollHeight}
             setscrollHeight={setscrollHeight}
+            popoverVisible={popoverVisible}
+            setPopoverVisible={setPopoverVisible}
           />
         </Col>
       </Row>
