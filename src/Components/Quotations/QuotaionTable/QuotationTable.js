@@ -60,6 +60,7 @@ const QuotationTable = ({
   const [selectfield, setselectfield] = useState("");
   // const [showAllData, setshowAllData] = useState(false)
   // const [scrollHeight, setscrollHeight] = useState("653px")
+  console.log(filterData)
 
   const itemsPerPage = 10;
   const quotationData = useSelector(
@@ -84,6 +85,7 @@ const QuotationTable = ({
           tblFilter[key]?.length === 0 || tblFilter[key]?.includes(item[key])
       )
     );
+    console.log(filterDataTable)
     setFilteredData(filterDataTable);
     setCurrentPage(1);
   }, [tblFilter, filterData]);
@@ -159,7 +161,7 @@ const QuotationTable = ({
       if (option.label.length <= 14) {
         return <span>{option.label}</span>;
       } else {
-        const truncatedText = option.label?.slice(0, 14).trim() + "..";
+        const truncatedText = option.label?.slice(0, 14).trim() + "...";
         return (
           <Tooltip placement="topLeft" title={option.label}>
             <span role="button">{truncatedText}</span>
