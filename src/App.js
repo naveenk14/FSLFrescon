@@ -27,6 +27,7 @@ import Quick from "./Components/QuickBooking/Quick";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import shipgif from "./assets/shiploadinggif.gif"
+import PomsTabs from "./Components/Poms/PomsTabs";
 
 const MainContent = ({
   showmap,
@@ -101,6 +102,7 @@ const MainContent = ({
           <Route path="/findnewrate" element={<FindNewRate />} />
           <Route path="/profile" element={<ProfileBase />} />
           <Route path="/quick" element={<Quick />} />
+          <Route path="/POMS" element={<PomsTabs />} />
         </Routes>
       {showfooter && <Footer />}
       <ToastContainer
