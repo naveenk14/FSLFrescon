@@ -8,12 +8,10 @@ import {  CaretDownOutlined } from "@ant-design/icons";
 import cal from "../../../assets/calVector.svg";
 
 const QuotationTabs = ({setHighlightShipmentCard,selectedDataToPatch,setSelectedDataToPatch}) => {
-  const UpcomingDataList = useSelector((state) => state.QuotationList.Quotation);
-  const UpcomingData = UpcomingDataList.data;
-  console.log(UpcomingData)
+  const quotationData = useSelector((state) => state?.QuotationList?.Quotation);
   const [activeKey, setActiveKey] = useState("1");
   const [currentPage, setCurrentPage] = useState(1);
-  const [data, setData] = useState(UpcomingData && UpcomingData);
+  const [data, setData] = useState(quotationData && quotationData?.data);
   const [filteredData, setFilteredData] = useState(data);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [showMore, setshowMore] = useState(false)
@@ -28,11 +26,22 @@ const QuotationTabs = ({setHighlightShipmentCard,selectedDataToPatch,setSelected
       "Past 6 Months",
       "Past 1 Year",
     ]; 
-  const quotationData = useSelector((state) => state?.QuotationList?.Quotation);
+  
+console.log(filteredData)
+console.log(data)
+
+useEffect(() => {
+    if (quotationData && quotationData?.data) {
+      console.log("works")
+      setData(quotationData?.data);
+    }
+  }, [quotationData]);
 
   const filterData = (status) => {
+    console.log(status)
     if (status === "All") {
-      setFilteredData(data);
+      console.log(data)
+      setFilteredData(data && data);
       setSelectedStatus("All");
     } else {
       setFilteredData( data.filter((item) => status.includes(item.status)));
