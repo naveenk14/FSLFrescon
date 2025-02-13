@@ -258,6 +258,24 @@ const Header = ({ setShowText, setShowmap,setShowReselt }) => {
               Quick Booking
             </Typography>
           </Link>
+          <Link to="/POMS" style={{ textDecoration: "none" }}>
+            <Typography
+              sx={{
+                fontSize: "15px",
+                fontWeight: "400",
+                color:
+                  location.pathname === "/POMS"
+                    ? "white"
+                    : "rgba(255, 255, 255, 0.5)",
+                padding: "20px",
+                "&:hover": {
+                  color: "white",
+                },
+              }}
+            >
+              POMS
+            </Typography>
+          </Link>
         </Box>
       </div>
       <div
