@@ -14,16 +14,18 @@ import image3 from "../../assets/Shape2.svg";
 import { CaretDownOutlined } from "@ant-design/icons";
 import cal from "../../assets/calVector.svg";
 import { SaveDsrReqeust } from "../../Redux/Actions/SaveDsrAction";
-import PomsBooking from "./PomsBooking";
+import PomsBooking from "./PO/PomsBooking";
 import { POMSdata } from "./DynamicData";
+import Supplier from "./Supplier/Supplier";
 
 function PomsTabs() {
   const [searchQuery] = useState("");
   const dispatch = useDispatch();
   const ShipmentData = useSelector((state) => state.Booking);
-  const bookingData = ShipmentData?.booking;
+  const bookingData = POMSdata?.purchaseOrders;
+  const supplierData = POMSdata?.suppliers;
   const tabCount = POMSdata?.statuswise_count;
-  const [data, setData] = useState(bookingData && bookingData?.data);
+  const [data, setData] = useState(bookingData && bookingData);
   const [schedulemodal, setSchedulemodal] = useState(false);
   const [selectedButton, setSelectedButton] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,6 +46,7 @@ function PomsTabs() {
   const [popoverVisible, setPopoverVisible] = useState(false); // State to control Popover visibility
   const [dsrpopoverVisible, setDsrPopoverVisible] = useState(false); // State to control Popover visibility
   // const saveSuccess = useSelector((state) => state?.SaveDsr?.savedsr?.Response);
+  console.log(bookingData,data,filteredData)
 
   let schedule;
   if (tabCount && tabCount?.length > 0) {
@@ -68,7 +71,7 @@ function PomsTabs() {
 
   useEffect(() => {
     const newFilteredData = data?.filter((item) =>
-      item.id.toLowerCase().includes(searchQuery.toLowerCase())
+      item?.id?.toLowerCase()?.includes(searchQuery?.toLowerCase())
     );
     setFilteredData(newFilteredData);
   }, [searchQuery, data]);
@@ -99,71 +102,7 @@ function PomsTabs() {
     }
   }, [selectedDropdownItem]);
 
-  const Profileusertoken = useSelector(
-    (state) => state.ProfileData?.profileData?.usertoken
-  );
-  const payloadofdsrdownload = {
-    sl_no: Profileusertoken,
-    sorigin: "",
-    sdest: "",
-    sstatus: "",
-    sshipper: "",
-    sconsignee: "",
-    sfrmdate: "",
-    stodate: "",
-    sshipmentby: "",
-    simport_export: "",
-    scolumns: "",
-    setafrmdate: "",
-    setatodate: "",
-  };
-  // const handleDownloadDsr = (e) => {
-  //   e.preventDefault();
-  //   console.log("download");
-  //   dispatch(DsrDownloadRequest({ payloadofdsrdownload }));
-  // };
-
-  const DsrReportData = useSelector((state) => state.DsrReport.dsrData);
-  console.log(DsrReportData);
-  const [selectedColumns, setSelectedColumns] = useState(
-    DsrReportData?.columns
-  ); // State to manage selected columns
-  console.log(selectedColumns);
-  let sselectcolumn = "";
-  // const filteredCol = Object?.keys(filtercolumn || {})?.filter(
-  //   (k) => filtercolumn[k]
-  // );
-  // const filteredColCopy = { ...filteredCol };
-  // if (filteredColCopy && typeof filteredColCopy === "object") {
-  //   sselectcolumn = Object?.values(filteredColCopy)?.join(",");
-  // } else {
-  //   console.error(
-  //     "filtercolumn is not defined or not an object:",
-  //     filteredColCopy
-  //   );
-  // }
-
-  if (selectedColumns) {
-    sselectcolumn = selectedColumns?.join(",");
-  }
-  console.log(sselectcolumn);
-
-  const payload = {
-    sserialno: Profileusertoken,
-    sselectcolumn: sselectcolumn,
-    spresetname: "test2",
-    spresetcol: "null",
-    sftype: "new",
-  };
-  const handleSaveDsr = (e) => {
-    e.preventDefault();
-    dispatch(SaveDsrReqeust({ payload }));
-  };
-  // useEffect(() => {
-  //   if (saveSuccess === "SUCCESS") {
-  //     toast.success("DSR Saved Successfully");
-  //   }
-  // }, [saveSuccess]);
+  
   const onChange = (key) => {
     setActiveTab(key);
     switch (key) {
@@ -207,46 +146,6 @@ function PomsTabs() {
   console.log(activeTab);
   console.log(schedule);
 
-  const exportExcel = () => {
-    // Prepare data based on selected column order
-    const excelData = DsrReportData?.data?.map((row) => {
-      const orderedRow = {};
-      selectedColumns.forEach((col) => {
-        orderedRow[col] = row[col]; // Add data in the order of selected columns
-      });
-      return orderedRow;
-    });
-
-    import("xlsx").then((xlsx) => {
-      const worksheet = xlsx.utils.json_to_sheet(excelData);
-      const workbook = { Sheets: { data: worksheet }, SheetNames: ["data"] };
-      const excelBuffer = xlsx.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-
-      saveAsExcelFile(excelBuffer, "download");
-    });
-  };
-
-  const saveAsExcelFile = (buffer, fileName) => {
-    import("file-saver").then((module) => {
-      if (module && module.default) {
-        let EXCEL_TYPE =
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-        let EXCEL_EXTENSION = ".xlsx";
-        const data = new Blob([buffer], {
-          type: EXCEL_TYPE,
-        });
-
-        module.default.saveAs(
-          data,
-          fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
-        );
-      }
-    });
-  };
-
   //for tab change according to show display showmore button
 
   useEffect(() => {
@@ -273,23 +172,6 @@ function PomsTabs() {
   console.log(activeTab);
   console.log(showMore);
 
-  // const saveAsExcelFile = (buffer, fileName) => {
-  //   import("file-saver").then((module) => {
-  //     if (module && module.default) {
-  //       let EXCEL_TYPE =
-  //         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-  //       let EXCEL_EXTENSION = ".xlsx";
-  //       const data = new Blob([buffer], {
-  //         type: EXCEL_TYPE,
-  //       });
-
-  //       module.default.saveAs(
-  //         data,
-  //         fileName + "_export_" + new Date().getTime() + EXCEL_EXTENSION
-  //       );
-  //     }
-  //   });
-  // };
 
   const handleUpcomingDep = () => {
     setSelectedButton("Upcoming Departures");
@@ -593,25 +475,50 @@ function PomsTabs() {
               }}
             >
               {/* {!showText ? ( */}
+              {
+                activeTab === "1" && (
               <PomsBooking
-              //   filterData={filteredData}
-              //   selectedStatus={selectedStatus}
-              //   filterValue={filterValue}
-              //   currentPage={currentPage}
-              //   setCurrentPage={setCurrentPage}
-              //   filterMonthValue={filterMonthValue}
-              //   activeTab={activeTab}
-              //   schedule={schedule}
-              //   showMore={showMore}
-              //   setshowMore={setshowMore}
-              //   showAllData={showAllData}
-              //   setshowAllData={setshowAllData}
-              //   scrollHeight={scrollHeight}
-              //   setscrollHeight={setscrollHeight}
-              //   popoverVisible={popoverVisible}
-              //   setPopoverVisible={setPopoverVisible}
-              //   bookingData={bookingData}
+                filterData={data}
+                selectedStatus={selectedStatus}
+                filterValue={filterValue}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                filterMonthValue={filterMonthValue}
+                activeTab={activeTab}
+                schedule={schedule}
+                showMore={showMore}
+                setshowMore={setshowMore}
+                showAllData={showAllData}
+                setshowAllData={setshowAllData}
+                scrollHeight={scrollHeight}
+                setscrollHeight={setscrollHeight}
+                popoverVisible={popoverVisible}
+                setPopoverVisible={setPopoverVisible}
+                bookingData={bookingData}
               />
+              )}
+              {
+                activeTab === "2" && (
+              <Supplier
+                filterData={supplierData}
+                selectedStatus={selectedStatus}
+                filterValue={filterValue}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                filterMonthValue={filterMonthValue}
+                activeTab={activeTab}
+                schedule={schedule}
+                showMore={showMore}
+                setshowMore={setshowMore}
+                showAllData={showAllData}
+                setshowAllData={setshowAllData}
+                scrollHeight={scrollHeight}
+                setscrollHeight={setscrollHeight}
+                popoverVisible={popoverVisible}
+                setPopoverVisible={setPopoverVisible}
+                bookingData={bookingData}
+              />
+              )}
               {/* ) : (
             <DailyReportTable
               filterReport={filterReport}
