@@ -529,7 +529,7 @@ const POexpansionTemplate = ({
   //       10
 
   //     );
-//   console.log(filterData)
+  console.log(filterData)
 //   const paginatedData = showAllData ? filteredData : filteredData;
   const noData = () => {
     return (

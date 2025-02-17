@@ -25,8 +25,8 @@ import shipgif from "../../../assets/shiploadinggif.gif";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-const SupplierexpansionTemplate = ({
-  filterData,
+const CountryexpansionTemplate = ({
+  filterDatas,
   filterValue,
   currentPage,
   setCurrentPage,
@@ -43,7 +43,7 @@ const SupplierexpansionTemplate = ({
 }) => {
   const itemsPerPage = 5;
   const dispatch = useDispatch();
-  const [filteredData, setFilteredData] = useState(filterData);
+  const [filteredData, setFilteredData] = useState(filterDatas);
   const [clicked, setClicked] = useState(false);
   const [data, setData] = useState(filteredData);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,7 +84,7 @@ const SupplierexpansionTemplate = ({
 //   }, [filterValue, filterMonthValue]);
 
   useEffect(() => {
-    const filterDataTable = filterData
+    const filterDataTable = filterDatas
       ?.map((item, index) => ({
         key: index,
         ...item,
@@ -98,7 +98,7 @@ const SupplierexpansionTemplate = ({
       );
     setFilteredData(filterDataTable);
     // setCurrentPage(1);
-  }, [tblFilter, filterData]);
+  }, [tblFilter, filterDatas]);
 
   //for adjust scrollbar
   const wrapper = document.querySelector(".scrolloftable .p-datatable-wrapper");
@@ -284,22 +284,21 @@ const SupplierexpansionTemplate = ({
     );
   };
 
-  const orderNoTemplateFilterData = (rowData) => {
-    console.log(rowData)
+  const orderDateTemplateFilterData = (rowData) => {
     return (
       <div style={{ textAlign: "start" }}>
-        <u className="" role="button" onClick={()=>showModal(rowData)} >
-          {rowData?.orderNo?.length <= 20 ? (
-            rowData?.orderNo
+        <span className="">
+          {rowData?.productCode?.length <= 20 ? (
+            rowData?.productCode
           ) : (
-            <Tooltip placement="topLeft" title={rowData?.orderNo}>
+            <Tooltip placement="topLeft" title={rowData?.productCode}>
               <span role="button">
-                {rowData?.orderNo?.slice(0, 20)?.trim()?.split(" ")?.join("") +
+                {rowData?.productCode?.slice(0, 20)?.trim()?.split(" ")?.join("") +
                   ".."}
               </span>
             </Tooltip>
           )}
-        </u>
+        </span>
       </div>
     );
   };
@@ -524,7 +523,7 @@ const SupplierexpansionTemplate = ({
   //       10
 
   //     );
-  console.log(filterData)
+  console.log(filterDatas)
 //   const paginatedData = showAllData ? filteredData : filteredData;
   const noData = () => {
     return (
@@ -765,7 +764,7 @@ const SupplierexpansionTemplate = ({
         </div>
       )} */}
       <DataTable
-        value={filterData}
+        value={filterDatas}
         // reorderableColumns
         // reorderableRows
         // onRowReorder={(e) => setFilteredData(e.value)}
@@ -791,7 +790,6 @@ const SupplierexpansionTemplate = ({
             </span>
           }
           style={{ paddingLeft: "10px", paddingRight: "10px" }}
-          body={orderNoTemplateFilterData}
         ></Column>
         <Column
           field="supplierName"
@@ -961,13 +959,13 @@ const SupplierexpansionTemplate = ({
         onPageChange={() => setCurrentPage(1)}
         itemsPerPage={itemsPerPage}
       /> */}
-      <ShipmentBase
+      {/* <ShipmentBase
         open={isModalOpen}
         close={setIsModalOpen}
         rowData={modalRowData}
-      />
+      /> */}
     </div>
   );
 };
 
-export default SupplierexpansionTemplate;
+export default CountryexpansionTemplate;

@@ -1,0 +1,47 @@
+.shipment__sidebarcard:hover {
+    /* background-color: #CFF1FF !important; */
+    border: 3px solid #CFF1FF ; /*Highlight the left side*/
+    transition: background-color 0.3s ease, border-left 0.3s ease;
+}
+
+
+.shipment__sidebarcard .ant-card-body {
+    padding: 8px !important;
+}
+
+
+/* .shipmentsidebar {
+    max-height: 558px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+} */
+
+
+.shipmentsidebar {
+    max-height: 558px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.shipmentsidebar::-webkit-scrollbar {
+    width: 0px;
+}
+
+.shipmentsidebar {
+    scrollbar-width: none;
+
+}
+
+.shipmentsidebar {
+    -ms-overflow-style: none;
+
+}
+
+.shipmentsidebartag {
+    font-weight: 500;
+    font-size: 12px;
+    color: #243756 !important;
+    background: rgba(0, 128, 0, 0.1) !important;
+    border: 1px solid #008000 !important;
+}

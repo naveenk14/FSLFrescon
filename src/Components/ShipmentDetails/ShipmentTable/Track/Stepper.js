@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import './Stepper.css'
 import { useSelector } from 'react-redux';
 import { Tooltip } from 'antd';
+import { POMSdata } from '../../../Poms/DynamicData';
 
 const Stepper = ({booking_id}) => {
 
@@ -57,7 +58,7 @@ const progress = booking_id //This is for getting previous page id
 
 const ShipmentData = useSelector((state) => state.Booking);
 const Booking = ShipmentData?.booking?.data
-const fileteredMilestone = Booking?.filter((item)=>item.id===progress)
+const fileteredMilestone = POMSdata?.purchaseOrders?.filter((item)=>item.id===progress)
 console.log("Booking",Booking)
 console.log("filtered",fileteredMilestone)
 
