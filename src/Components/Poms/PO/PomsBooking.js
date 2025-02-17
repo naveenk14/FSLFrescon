@@ -256,6 +256,7 @@ const PomsBooking = ({
   // const endIndex = Math.min(startIndex + itemsPerPage, filteredData?.length);
 
   const showModal = (rowData) => {
+    console.log(rowData)
     setModalRowData(rowData);
     setIsModalOpen(true);
   };

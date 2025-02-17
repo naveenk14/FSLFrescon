@@ -21,6 +21,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { ViewBookingAction } from "../../../Redux/Actions/ViewBookingAction";
 // import { useLocation } from "react-router-dom";
 import CountryFlag from "../../Core-Components/CountryFlag";
+import { POMSdata } from "../../Poms/DynamicData";
+import { Button } from "@mui/material";
+import OrderSummary from "../../Poms/OrderSummary";
+import MoreDot from "../../../assets/More Dot.svg";
 
 const ShipmentHeader = ({ rowDatas }) => {
   //This is for getting id from previous page
@@ -30,6 +34,7 @@ const ShipmentHeader = ({ rowDatas }) => {
   // console.log("shipmentrowData", rowData.id);
   const booking_id = rowDatas?.id;
   console.log("rowdtas", booking_id);
+  const [open, setOpen] = useState(false);
 
   //get ViewBooking details ApiData
   // const booking_id = rowData.id
@@ -45,9 +50,12 @@ const ShipmentHeader = ({ rowDatas }) => {
 
   //This is for a Booking_header
   const progress = booking_id; //get Id from previous page
+  console.log(progress)
   const ShipmentData = useSelector((state) => state.Booking);
   const Booking = ShipmentData?.booking?.data;
-  const fileteredMilestone = Booking?.filter((item) => item.id === progress);
+  console.log(Booking)
+  console.log(rowDatas)
+  const fileteredMilestone = POMSdata?.purchaseOrders?.filter((item) => item.id === progress);
 
   // for Cancel Booking Dropdown
   // const onClick = ({ key }) => {
@@ -366,7 +374,7 @@ const ShipmentHeader = ({ rowDatas }) => {
                 {/* <div className="col-4">
             <h6 className="m-0 me-2">Order ID:</h6>
             {fileteredMilestone?.map((item) => {
-              return <h6 className="m-0">{item.order_no}</h6>;
+              return <h6 className="m-0">{item.orderNo}</h6>;
             })}
           </div> */}
                 <div className="me-5">
@@ -396,16 +404,16 @@ const ShipmentHeader = ({ rowDatas }) => {
                   <h6 className="m-0 me-2">Order ID:</h6>
                   <h6 className="m-0">
                     {/*ASO/0143/247887878*/}
-                    {item?.order_no?.length <= 70 ? (
-                      item?.order_no
+                    {item?.orderNo?.length <= 70 ? (
+                      item?.orderNo
                     ) : (
                       <Tooltip
                         placement="topLeft"
                         zIndex={9999}
-                        title={item?.order_no}
+                        title={item?.orderNo}
                       >
                         <span role="button">
-                          {item?.order_no
+                          {item?.orderNo
                             .slice(0, 69)
                             .trim()
                             .split("")
@@ -413,7 +421,11 @@ const ShipmentHeader = ({ rowDatas }) => {
                         </span>
                       </Tooltip>
                     )}
+                    
                   </h6>
+                  {/* <Button variant="contained" >Open Order Summary</Button> */}
+                  <img src={MoreDot} className="mx-2" onClick={() => setOpen(true)} />
+                  <OrderSummary open={open} handleClose={() => setOpen(false)} />
                 </div>
               </div>
 

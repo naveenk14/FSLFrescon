@@ -17,6 +17,8 @@ import { SaveDsrReqeust } from "../../Redux/Actions/SaveDsrAction";
 import PomsBooking from "./PO/PomsBooking";
 import { POMSdata } from "./DynamicData";
 import Supplier from "./Supplier/Supplier";
+import CountryTab from "./Country/CountryTab";
+import Product from "./Product/Product";
 
 function PomsTabs() {
   const [searchQuery] = useState("");
@@ -24,6 +26,8 @@ function PomsTabs() {
   const ShipmentData = useSelector((state) => state.Booking);
   const bookingData = POMSdata?.purchaseOrders;
   const supplierData = POMSdata?.suppliers;
+  const countriesData = POMSdata?.countries;
+  const productsData = POMSdata?.products;
   const tabCount = POMSdata?.statuswise_count;
   const [data, setData] = useState(bookingData && bookingData);
   const [schedulemodal, setSchedulemodal] = useState(false);
@@ -501,6 +505,50 @@ function PomsTabs() {
                 activeTab === "2" && (
               <Supplier
                 filterData={supplierData}
+                selectedStatus={selectedStatus}
+                filterValue={filterValue}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                filterMonthValue={filterMonthValue}
+                activeTab={activeTab}
+                schedule={schedule}
+                showMore={showMore}
+                setshowMore={setshowMore}
+                showAllData={showAllData}
+                setshowAllData={setshowAllData}
+                scrollHeight={scrollHeight}
+                setscrollHeight={setscrollHeight}
+                popoverVisible={popoverVisible}
+                setPopoverVisible={setPopoverVisible}
+                bookingData={bookingData}
+              />
+              )}
+              {
+                activeTab === "3" && (
+              <CountryTab
+                filterData={countriesData}
+                selectedStatus={selectedStatus}
+                filterValue={filterValue}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                filterMonthValue={filterMonthValue}
+                activeTab={activeTab}
+                schedule={schedule}
+                showMore={showMore}
+                setshowMore={setshowMore}
+                showAllData={showAllData}
+                setshowAllData={setshowAllData}
+                scrollHeight={scrollHeight}
+                setscrollHeight={setscrollHeight}
+                popoverVisible={popoverVisible}
+                setPopoverVisible={setPopoverVisible}
+                bookingData={bookingData}
+              />
+              )}
+              {
+                activeTab === "4" && (
+              <Product
+                filterData={productsData}
                 selectedStatus={selectedStatus}
                 filterValue={filterValue}
                 currentPage={currentPage}

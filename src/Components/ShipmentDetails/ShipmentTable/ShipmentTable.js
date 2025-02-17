@@ -20,12 +20,12 @@ const ShipmentTable = ({tabListNoTitle,contentListNoTitle,setVesselmodalopen,clo
     }
 
     //This is for mode logic
-    const ShipmentData = useSelector((state) => state.Booking);
-    const Booking = ShipmentData?.booking?.data;
-    const fileteredMilestone = Booking?.filter((item) => item.id === booking_id);
-    console.log("mode", fileteredMilestone);
-    const mode = fileteredMilestone[0]?.mode
-    console.log(mode)
+    // const ShipmentData = useSelector((state) => state.Booking);
+    // const Booking = ShipmentData?.booking?.data;
+    // const fileteredMilestone = Booking?.filter((item) => item.id === booking_id);
+    // console.log("mode", fileteredMilestone);
+    // const mode = fileteredMilestone[0]?.mode
+    // console.log(mode)
 
   return (
     <Card

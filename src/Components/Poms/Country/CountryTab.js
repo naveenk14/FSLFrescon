@@ -13,7 +13,7 @@ import "primeicons/primeicons.css";
 import "../../Shipments/ShipmentTable/Booking.css";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { IconButton } from "@mui/material";
+import { Dialog, DialogContent, IconButton } from "@mui/material";
 import ShipmentBase from "../../ShipmentDetails/ShipmentTable/ShipmentBase";
 import { MultiSelect } from "primereact/multiselect";
 import { useSelector } from "react-redux";
@@ -24,8 +24,10 @@ import "../../Dashboard/ShipmentHistory/ShipmentHistory.css";
 import shipgif from "../../../assets/shiploadinggif.gif";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import CountryexpansionTemplate from "./CountryexpansionTemplate";
+// import SupplierexpansionTemplate from "./SupplierexpansionTemplate";
 
-const SupplierexpansionTemplate = ({
+const CountryTab = ({
   filterData,
   filterValue,
   currentPage,
@@ -39,7 +41,7 @@ const SupplierexpansionTemplate = ({
   setscrollHeight,
   popoverVisible,
   setPopoverVisible,
-  bookingData
+  bookingData,
 }) => {
   const itemsPerPage = 5;
   const dispatch = useDispatch();
@@ -52,36 +54,35 @@ const SupplierexpansionTemplate = ({
   // const [showAllData, setshowAllData] = useState(false)
   // const [scrollHeight, setscrollHeight] = useState("653px")
   const [selectfield, setselectfield] = useState("");
-  const [expandedRows, setExpandedRows] = useState(null);
+  const [expandedRow, setExpandedRow] = useState(null);
+  const [showcountry, setShowcountry] = useState(false)
   console.log(data);
   const [tblFilter, setTblFilter] = useState({
-    orderNo: [],
-    origin: [],
-    destination: [],
+    country: [],
     pending: [],
     ordered: [],
     inTransit: [],
     delivered: [],
-    supplierName:[]
+    booked: [],
   });
-//   const payload = {
-//     filter_month: filterMonthValue ? filterMonthValue : "",
-//     booking_type: "",
-//     inTransit: "",
-//     spagesize: "",
-//     sperpage: "",
-//     booking_number: "",
-//     origin: "",
-//     destination: "",
-//     orderNo: "",
-//     etd: "",
-//     eta: "",
-//     filter_days: filterValue ? filterValue : "",
-//   };
+  const payload = {
+    filter_month: filterMonthValue ? filterMonthValue : "",
+    booking_type: "",
+    inTransit: "",
+    spagesize: "",
+    sperpage: "",
+    booking_number: "",
+    origin: "",
+    destination: "",
+    country: "",
+    etd: "",
+    eta: "",
+    filter_days: filterValue ? filterValue : "",
+  };
 
-//   useEffect(() => {
-//     dispatch(bookingRequest({ payload }));
-//   }, [filterValue, filterMonthValue]);
+  //   useEffect(() => {
+  //     dispatch(bookingRequest({ payload }));
+  //   }, [filterValue, filterMonthValue]);
 
   useEffect(() => {
     const filterDataTable = filterData
@@ -97,7 +98,7 @@ const SupplierexpansionTemplate = ({
         )
       );
     setFilteredData(filterDataTable);
-    // setCurrentPage(1);
+    setCurrentPage(1);
   }, [tblFilter, filterData]);
 
   //for adjust scrollbar
@@ -133,7 +134,7 @@ const SupplierexpansionTemplate = ({
     if (!Array.isArray(array) || !array?.length) {
       return [];
     }
-    console.log(array, key)
+    console.log(array, key);
     return Array.from(new Set(array.map((data) => data[key]))).map(
       (value, index) => ({
         key: index,
@@ -149,24 +150,22 @@ const SupplierexpansionTemplate = ({
     }
   }, [clicked]);
 
-  const orderNo_ = getUniqueOptions(data, "orderNo");
   const booked_ = getUniqueOptions(data, "booked");
+  const countryName_ = getUniqueOptions(data, "country");
   const pending_ = getUniqueOptions(data, "pending");
   const ordered_ = getUniqueOptions(data, "ordered");
   const intransit_ = getUniqueOptions(data, "inTransit");
   const delivered_ = getUniqueOptions(data, "delivered");
-  const supplierName_ = getUniqueOptions(data, "supplierName");
 
   const handleChangeFilter = (field, filterValues) => {
     if (field === "all") {
       setTblFilter({
-        orderNo: [],
-       booked: [],
+        country: [],
         pending: [],
         ordered: [],
         inTransit: [],
         delivered: [],
-        supplierName:[]
+        booked: [],
       });
     } else {
       setTblFilter((prevFilters) => ({
@@ -179,15 +178,12 @@ const SupplierexpansionTemplate = ({
   useEffect(() => {
     if (selectedStatus !== null) {
       setTblFilter({
-        product: [],
-        productCode: [],
-        orderNo: [],
-       booked: [],
+        country: [],
         pending: [],
         ordered: [],
         inTransit: [],
         delivered: [],
-        supplierName:[]
+        booked: [],
       });
     }
   }, [selectedStatus]);
@@ -200,7 +196,7 @@ const SupplierexpansionTemplate = ({
     additionalStyles
   ) {
     const renderOption = (option) => {
-      console.log(option)
+      console.log(option);
       if (option?.label?.length <= 14) {
         return <span>{option.label}</span>;
       } else {
@@ -213,11 +209,7 @@ const SupplierexpansionTemplate = ({
       }
     };
 
-    console.log(filterKey,
-      options,
-      value,
-      headerText,
-      additionalStyles)
+    console.log(filterKey, options, value, headerText, additionalStyles);
 
     const dynamicWidth = headerText?.length * 8 + "px";
     return (
@@ -279,16 +271,40 @@ const SupplierexpansionTemplate = ({
           gap: "8px",
         }}
         label={buttonLabel}
-        onClick={() => showModal(rowData)}
+        onClick={() => {
+            setShowcountry(prev=>!prev)
+            onOrderClick(rowData)
+            // setShowcountry(true);
+        }}
       />
     );
   };
 
-  const orderNoTemplateFilterData = (rowData) => {
-    console.log(rowData)
+  const orderDateTemplateFilterData = (rowData) => {
     return (
       <div style={{ textAlign: "start" }}>
-        <u className="" role="button" onClick={()=>showModal(rowData)} >
+        <span className="">
+          {rowData?.orderDate?.length <= 20 ? (
+            rowData?.orderDate
+          ) : (
+            <Tooltip placement="topLeft" title={rowData?.orderDate}>
+              <span role="button">
+                {rowData?.orderDate
+                  ?.slice(0, 20)
+                  ?.trim()
+                  ?.split(" ")
+                  ?.join("") + ".."}
+              </span>
+            </Tooltip>
+          )}
+        </span>
+      </div>
+    );
+  };
+  const orderNoTemplateFilterData = (rowData) => {
+    return (
+      <div style={{ textAlign: "start" }} >
+        <span className="text-decoration-underline" role="button">
           {rowData?.orderNo?.length <= 20 ? (
             rowData?.orderNo
           ) : (
@@ -299,31 +315,14 @@ const SupplierexpansionTemplate = ({
               </span>
             </Tooltip>
           )}
-        </u>
-      </div>
-    );
-  };
-  const productTemplateFilterData = (rowData) => {
-    return (
-      <div style={{ textAlign: "start" }}>
-        <span className="text-decoration-underline" role="button">
-          {rowData?.product?.length <= 20 ? (
-            rowData?.product
-          ) : (
-            <Tooltip placement="topLeft" title={rowData?.product}>
-              <span role="button">
-                {rowData?.product?.slice(0, 20)?.trim()?.split(" ")?.join("") + ".."}
-              </span>
-            </Tooltip>
-          )}
         </span>
       </div>
     );
   };
-  const originBodyTemplate = (rowData) => {
+  const countryBodyTemplate = (rowData) => {
     return (
       <div className="origin-cell" style={{ textAlign: "start" }}>
-        <CountryFlag countryCode={rowData?.origin_countrycode} />
+        <CountryFlag countryCode={rowData?.countrycode} />
         <span
           style={{
             paddingLeft: "8px",
@@ -332,12 +331,12 @@ const SupplierexpansionTemplate = ({
             textAlign: "start",
           }}
         >
-          {rowData?.origin?.length <= 12 ? (
-            rowData?.origin
+          {rowData?.country?.length <= 20 ? (
+            rowData?.country
           ) : (
-            <Tooltip placement="topLeft" title={rowData?.origin}>
+            <Tooltip placement="topLeft" title={rowData?.country}>
               <span role="button">
-                {rowData?.origin?.slice(0, 11)?.trim()?.split(" ")?.join("") +
+                {rowData?.country?.slice(0, 19)?.trim()?.split(" ")?.join("") +
                   ".."}
               </span>
             </Tooltip>
@@ -371,7 +370,6 @@ const SupplierexpansionTemplate = ({
     );
   };
   const bodyTemplateOrdered = (rowData) => {
-  
     return (
       <div style={{ textAlign: "start" }}>
         <span className="">
@@ -380,7 +378,8 @@ const SupplierexpansionTemplate = ({
           ) : (
             <Tooltip placement="topLeft" title={rowData?.ordered}>
               <span role="button">
-                {rowData?.ordered?.slice(0, 20)?.trim()?.split(" ")?.join("") + ".."}
+                {rowData?.ordered?.slice(0, 20)?.trim()?.split(" ")?.join("") +
+                  ".."}
               </span>
             </Tooltip>
           )}
@@ -390,7 +389,6 @@ const SupplierexpansionTemplate = ({
   };
 
   const bodyTemplatePending = (rowData) => {
-
     return (
       <div style={{ textAlign: "start" }}>
         <span className="">
@@ -399,7 +397,8 @@ const SupplierexpansionTemplate = ({
           ) : (
             <Tooltip placement="topLeft" title={rowData?.pending}>
               <span role="button">
-                {rowData?.pending?.slice(0, 20)?.trim()?.split(" ")?.join("") + ".."}
+                {rowData?.pending?.slice(0, 20)?.trim()?.split(" ")?.join("") +
+                  ".."}
               </span>
             </Tooltip>
           )}
@@ -407,9 +406,7 @@ const SupplierexpansionTemplate = ({
       </div>
     );
   };
-
   const bodyTemplateBooked = (rowData) => {
-
     return (
       <div style={{ textAlign: "start" }}>
         <span className="">
@@ -418,7 +415,8 @@ const SupplierexpansionTemplate = ({
           ) : (
             <Tooltip placement="topLeft" title={rowData?.booked}>
               <span role="button">
-                {rowData?.booked?.slice(0, 20)?.trim()?.split(" ")?.join("") + ".."}
+                {rowData?.booked?.slice(0, 20)?.trim()?.split(" ")?.join("") +
+                  ".."}
               </span>
             </Tooltip>
           )}
@@ -426,8 +424,8 @@ const SupplierexpansionTemplate = ({
       </div>
     );
   };
-  const bodyTemplateInTransit = (rowData) => {
 
+  const bodyTemplateInTransit = (rowData) => {
     return (
       <div style={{ textAlign: "start" }}>
         <span className="">
@@ -436,7 +434,11 @@ const SupplierexpansionTemplate = ({
           ) : (
             <Tooltip placement="topLeft" title={rowData?.inTransit}>
               <span role="button">
-                {rowData?.inTransit?.slice(0, 20)?.trim()?.split(" ")?.join("") + ".."}
+                {rowData?.inTransit
+                  ?.slice(0, 20)
+                  ?.trim()
+                  ?.split(" ")
+                  ?.join("") + ".."}
               </span>
             </Tooltip>
           )}
@@ -445,7 +447,6 @@ const SupplierexpansionTemplate = ({
     );
   };
   const bodyTemplateDelievered = (rowData) => {
-
     return (
       <div style={{ textAlign: "start" }}>
         <span className="">
@@ -454,7 +455,11 @@ const SupplierexpansionTemplate = ({
           ) : (
             <Tooltip placement="topLeft" title={rowData?.delivered}>
               <span role="button">
-                {rowData?.delivered?.slice(0, 20)?.trim()?.split(" ")?.join("") + ".."}
+                {rowData?.delivered
+                  ?.slice(0, 20)
+                  ?.trim()
+                  ?.split(" ")
+                  ?.join("") + ".."}
               </span>
             </Tooltip>
           )}
@@ -524,8 +529,8 @@ const SupplierexpansionTemplate = ({
   //       10
 
   //     );
-  console.log(filterData)
-//   const paginatedData = showAllData ? filteredData : filteredData;
+  console.log(filterData);
+  const paginatedData = showAllData ? filteredData : filteredData;
   const noData = () => {
     return (
       <div
@@ -536,192 +541,221 @@ const SupplierexpansionTemplate = ({
       </div>
     );
   };
-//   if (loading) {
-//     return (
-//       <Box
-//         sx={{
-//           display: "flex",
-//           justifyContent: "center",
-//           alignItems: "center",
-//           height: "353px",
-//           // alignSelf:"center"
-//         }}
-//       >
-//         {/* <CircularProgress style={{ color: "red" }} /> */}
-//         <img src={shipgif} width="140px" height="140px" />
-//       </Box>
-//     );
-//   }
-//   const FilterTag = ({ field, filterValues, handleChangeFilter }) => {
-//     const popoverRef = useRef(null); // Reference for the popover
-//     const handleClick = (field) => {
-//       setselectfield(field);
-//       setPopoverVisible((prev) => !prev);
-//       console.log(field);
-//       console.log(selectfield);
-//     };
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "353px",
+          // alignSelf:"center"
+        }}
+      >
+        {/* <CircularProgress style={{ color: "red" }} /> */}
+        <img src={shipgif} width="140px" height="140px" />
+      </Box>
+    );
+  }
+  const FilterTag = ({ field, filterValues, handleChangeFilter }) => {
+    const popoverRef = useRef(null); // Reference for the popover
+    const handleClick = (field) => {
+      setselectfield(field);
+      setPopoverVisible((prev) => !prev);
+      console.log(field);
+      console.log(selectfield);
+    };
 
-//     // Close the popover if clicked outside
-//     useEffect(() => {
-//       const handleOutsideClick = (event) => {
-//         if (popoverRef.current && !popoverRef.current.contains(event.target)) {
-//           setselectfield("");
-//           setPopoverVisible(false); // Close the popover if clicked outside
-//         }
-//       };
+    // Close the popover if clicked outside
+    useEffect(() => {
+      const handleOutsideClick = (event) => {
+        if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+          setselectfield("");
+          setPopoverVisible(false); // Close the popover if clicked outside
+        }
+      };
 
-//       // Attach event listener
-//       if (popoverVisible) {
-//         document.addEventListener("mousedown", handleOutsideClick);
-//       }
+      // Attach event listener
+      if (popoverVisible) {
+        document.addEventListener("mousedown", handleOutsideClick);
+      }
 
-//       // Cleanup the event listener when popover is closed or unmounted
-//       return () => {
-//         document.removeEventListener("mousedown", handleOutsideClick);
-//       };
-//     }, [popoverVisible]);
-//     const renderTags = (field, filterValues) => {
-//       return (
-//         <div
-//           ref={popoverRef}
-//           style={{
-//             position: "absolute",
-//             top: "0",
-//             width: "100%",
-//             background: "white",
-//             zIndex: "10",
-//             borderRadius: "8px",
-//             boxShadow: "0 0 10px 5px rgba(0, 0, 0, 0.2)",
-//             margin: "25px 0px",
-//           }}
-//         >
-//           <ul style={{ padding: "8px", margin: "0px" }}>
-//             {filterValues?.map((item, index) => {
-//               return (
-//                 <li
-//                   style={{
-//                     fontSize: "12px",
-//                     fontWeight: "700",
-//                     listStyle: "none",
-//                     color: "#000000c9",
-//                   }}
-//                   key={index}
-//                 >
-//                   {item}{" "}
-//                   <IoCloseCircleSharp
-//                     role="button"
-//                     onClick={() => {
-//                       handleDeleteValue(field, item);
-//                     }}
-//                   />
-//                 </li>
-//               );
-//             })}
-//           </ul>
-//         </div>
-//       );
-//     };
+      // Cleanup the event listener when popover is closed or unmounted
+      return () => {
+        document.removeEventListener("mousedown", handleOutsideClick);
+      };
+    }, [popoverVisible]);
+    const renderTags = (field, filterValues) => {
+      return (
+        <div
+          ref={popoverRef}
+          style={{
+            position: "absolute",
+            top: "0",
+            width: "100%",
+            background: "white",
+            zIndex: "10",
+            borderRadius: "8px",
+            boxShadow: "0 0 10px 5px rgba(0, 0, 0, 0.2)",
+            margin: "25px 0px",
+          }}
+        >
+          <ul style={{ padding: "8px", margin: "0px" }}>
+            {filterValues?.map((item, index) => {
+              return (
+                <li
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: "700",
+                    listStyle: "none",
+                    color: "#000000c9",
+                  }}
+                  key={index}
+                >
+                  {item}{" "}
+                  <IoCloseCircleSharp
+                    role="button"
+                    onClick={() => {
+                      handleDeleteValue(field, item);
+                    }}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      );
+    };
 
-//     const handleDeleteValue = (field, value) => {
-//       console.log(field, value);
-//       const newValues = filterValues.filter((item) => item !== value);
-//       console.log(field, newValues);
-//       handleChangeFilter(field, newValues);
-//     };
-//     if (!Array.isArray(filterValues)) {
-//       return null;
-//     }
-//     const renderedColumns = new Set();
-//     return (
-//       <>
-//         {filterValues.map((option) => {
-//           if (!renderedColumns.has(field)) {
-//             renderedColumns.add(field);
-//             return (
-//               <Tag
-//                 key={field}
-//                 style={{
-//                   backgroundColor: "#F01E1E",
-//                   marginRight: "10px",
-//                   position: "relative",
-//                   fontSize: "10px",
-//                 }}
-//                 className="px-2 py-1"
-//                 rounded
-//               >
-//                 <div style={{ position: "relative" }}>
-//                   {field === "orderNo" ? "Order No" : ""}
-//                   {field === "productCode" ? "Product Code" : ""}
-//                   {field === "orderNo" ? "Order No" : ""}
-//                   {field === "pending" ? "Pending" : ""}
-//                   {field === "ordered" ? "Ordered" : ""}
-//                   {field === "inTransit" ? "InTransit" : ""}
-//                   {field === "delivered" ? "Delivered" : ""}
-//                   {field === "origin" ? "Origin" : ""}
-//                   {field === "destination" ? "Destination" : ""}
-//                   &nbsp; :{" "}
-//                   {filterValues?.length === 1 ? (
-//                     <span className="me-2">{filterValues[0]}</span>
-//                   ) : (
-//                     <span>
-//                       {filterValues[0]}&nbsp;
-//                       <Button
-//                         style={{ backgroundColor: "#F01E1E", border: "none" }}
-//                         variant="contained"
-//                         onClick={() => handleClick(field)}
-//                       >
-//                         <BsThreeDotsVertical
-//                           size={10}
-//                           style={{ marginBottom: "3px", marginLeft: "6px" }}
-//                         />
-//                       </Button>
-//                       {popoverVisible &&
-//                         field === selectfield &&
-//                         renderTags(field, filterValues)}
-//                     </span>
-//                   )}
-//                   <span className="ms-2">
-//                     <CloseOutlined
-//                       onClick={() => {
-//                         handleChangeFilter(field, []);
-//                       }}
-//                     />
-//                   </span>
-//                 </div>
-//               </Tag>
-//             );
-//           }
-//           return null;
-//         })}
-//       </>
-//     );
-//   };
+    const handleDeleteValue = (field, value) => {
+      console.log(field, value);
+      const newValues = filterValues.filter((item) => item !== value);
+      console.log(field, newValues);
+      handleChangeFilter(field, newValues);
+    };
+    if (!Array.isArray(filterValues)) {
+      return null;
+    }
+    const renderedColumns = new Set();
+    return (
+      <>
+        {filterValues.map((option) => {
+          if (!renderedColumns.has(field)) {
+            renderedColumns.add(field);
+            return (
+              <Tag
+                key={field}
+                style={{
+                  backgroundColor: "#F01E1E",
+                  marginRight: "10px",
+                  position: "relative",
+                  fontSize: "10px",
+                }}
+                className="px-2 py-1"
+                rounded
+              >
+                <div style={{ position: "relative" }}>
+                  {field === "booked" ? "Booked" : ""}
+                  {field === "country" ? "Country" : ""}
+                  {field === "pending" ? "Pending" : ""}
+                  {field === "ordered" ? "Ordered" : ""}
+                  {field === "inTransit" ? "InTransit" : ""}
+                  {field === "delivered" ? "Delivered" : ""}
+                  &nbsp; :{" "}
+                  {filterValues?.length === 1 ? (
+                    <span className="me-2">{filterValues[0]}</span>
+                  ) : (
+                    <span>
+                      {filterValues[0]}&nbsp;
+                      <Button
+                        style={{ backgroundColor: "#F01E1E", border: "none" }}
+                        variant="contained"
+                        onClick={() => handleClick(field)}
+                      >
+                        <BsThreeDotsVertical
+                          size={10}
+                          style={{ marginBottom: "3px", marginLeft: "6px" }}
+                        />
+                      </Button>
+                      {popoverVisible &&
+                        field === selectfield &&
+                        renderTags(field, filterValues)}
+                    </span>
+                  )}
+                  <span className="ms-2">
+                    <CloseOutlined
+                      onClick={() => {
+                        handleChangeFilter(field, []);
+                      }}
+                    />
+                  </span>
+                </div>
+              </Tag>
+            );
+          }
+          return null;
+        })}
+      </>
+    );
+  };
 
+  // Handle Order No click to toggle row expansion
+  // const onOrderClick = (rowData) => {
+  //   let _expandedRows = { ...expandedRows };
+  //   if (_expandedRows[rowData.orderNo]) {
+  //     delete _expandedRows[rowData.orderNo]; // Collapse row if already expanded
+  //   } else {
+  //     _expandedRows[rowData.orderNo] = true; // Expand row
+  //   }
+  //   console.log(_expandedRows)
+  //   setExpandedRows(_expandedRows);
+  // };
 
+  // Handle Order No click to toggle expansion
+  const onOrderClick = (rowData) => {
+    console.log(rowData);
+    console.log(expandedRow);
+    
+    setExpandedRow(expandedRow?.country === rowData.country ? null : rowData);
+  };
 
-//   // Handle Order No click to toggle row expansion
-//   const onOrderClick = (rowData) => {
-//     let _expandedRows = { ...expandedRows };
-//     if (_expandedRows[rowData.orderNo]) {
-//       delete _expandedRows[rowData.orderNo]; // Collapse row if already expanded
-//     } else {
-//       _expandedRows[rowData.orderNo] = true; // Expand row
-//     }
-//     console.log(_expandedRows)
-//     setExpandedRows(_expandedRows);
-//   };
-
-
+ // Custom row expansion template
+  const rowExpansionTemplate = (rowData) => {
+    console.log(rowData)
+    return (
+        <Dialog
+        open={showcountry}
+        onClose={() => setShowcountry(false)}
+        aria-labelledby="responsive-dialog-title"
+        id="vessel_modal_section"
+        maxWidth={"lg"}
+        fullWidth={true}
+      >
+        <DialogContent>
+          <CountryexpansionTemplate filterDatas={rowData.orders} />
+        </DialogContent>
+      </Dialog>
+    //   <SupplierexpansionTemplate filterData={rowData.orders} />
+      // <DataTable value={rowData.products} responsiveLayout="scroll">
+      //   <Column field="productCode" header="Product Code" />
+      //   <Column field="productName" header="Product Name" />
+      //   <Column field="supplier" header="Country" />
+      //   <Column field="ordered" header="Ordered" />
+      //   <Column field="pending" header="Pending" />
+      //   <Column field="booked" header="Booked" />
+      //   <Column field="inTransit" header="In-Transit" />
+      //   <Column field="delivered" header="Delivered" />
+      // </DataTable>
+    );
+  };
 
   return (
     <div
       style={{
         backgroundColor: "white",
-        padding: "20px",
-        border:"1px solid #E5E5E5",
       }}
     >
-      {/* {Object.keys(tblFilter)?.some((key) => tblFilter[key]?.length > 0) && (
+      {Object.keys(tblFilter)?.some((key) => tblFilter[key]?.length > 0) && (
         <div
           className="d-flex ps-2"
           style={{
@@ -763,22 +797,27 @@ const SupplierexpansionTemplate = ({
             </Tag>
           )}
         </div>
-      )} */}
+      )}
       <DataTable
-        value={filterData}
+        value={filteredData ? filteredData : bookingData?.data}
         // reorderableColumns
         // reorderableRows
         // onRowReorder={(e) => setFilteredData(e.value)}
         scrollable={true}
-        // scrollHeight={scrollHeight}
-        dataKey="orderNo"
+        scrollHeight={scrollHeight}
+        dataKey="country"
+        // expandedRows={expandedRows}
+        expandedRows={expandedRow ? [expandedRow] : []}
+        onRowToggle={(e) => setExpandedRow(e.data.length ? e.data[0] : null)}
+        // onRowToggle={(e) => setExpandedRows(e.data)}
+        rowExpansionTemplate={rowExpansionTemplate}
         className={`${
           filteredData?.length === 0 ? "text-center" : ""
         } scrolloftable`}
         // style={{ height: "653px", overflowY: "auto", marginBottom: "10px" }}
         emptyMessage={noData()}
       >
-        <Column
+        {/* <Column
           field="orderNo"
           header={
             <span
@@ -786,36 +825,66 @@ const SupplierexpansionTemplate = ({
               className=" d-flex"
             >
               Order No
-              {MultiSelectFilter("orderNo", orderNo_, tblFilter.orderNo, "Order No")}
+              {MultiSelectFilter("orderNo", OrderNo_, tblFilter.orderNo, "Order No")}
               {sort("orderNo")}
             </span>
           }
-          style={{ paddingLeft: "10px", paddingRight: "10px" }}
           body={orderNoTemplateFilterData}
+          style={{ paddingRight: "10px", width: "170px", paddingLeft: 10 }}
         ></Column>
         <Column
-          field="supplierName"
+          field="orderDate"
+          header={
+            <span
+              style={{ fontFamily: "Roboto", cursor: "pointer" }}
+              className="py-3 d-flex "
+            >
+              Order Date
+              {MultiSelectFilter(
+                "orderDate",
+                orderDate_,
+                tblFilter.orderDate,
+                "Order Date"
+              )}
+              {sort("orderDate")}
+            </span>
+          }
+          body={orderDateTemplateFilterData}
+          style={{ paddingLeft: "10px", paddingRight: "10px", width: "185px" }}
+          headerClassName="custom-header"
+        ></Column> */}
+        <Column
+          field="country"
+          body={countryBodyTemplate}
           header={
             <span
               style={{ fontFamily: "Roboto", cursor: "pointer" }}
               className=" d-flex"
             >
-              Supplier Name
-              {MultiSelectFilter("supplierName", supplierName_, tblFilter.supplierName, "Supplier Name")}
-              {sort("supplierName")}
+              Country
+              {MultiSelectFilter(
+                "country",
+                countryName_,
+                tblFilter.country,
+                "Country"
+              )}
+              {sort("country")}
             </span>
           }
           style={{ paddingLeft: "10px", paddingRight: "10px" }}
         ></Column>
-
-        
 
         <Column
           field="ordered"
           header={
             <span className=" d-flex" style={{ position: "relative" }}>
               Ordered
-              {MultiSelectFilter("ordered", ordered_, tblFilter.ordered, "Ordered")}
+              {MultiSelectFilter(
+                "ordered",
+                ordered_,
+                tblFilter.ordered,
+                "Ordered"
+              )}
               {sort("ordered")}
             </span>
           }
@@ -828,7 +897,12 @@ const SupplierexpansionTemplate = ({
           header={
             <span className=" d-flex">
               Pending
-              {MultiSelectFilter("pending", pending_, tblFilter.pending, "Pending")}
+              {MultiSelectFilter(
+                "pending",
+                pending_,
+                tblFilter.pending,
+                "Pending"
+              )}
               {sort("pending")}
             </span>
           }
@@ -854,20 +928,35 @@ const SupplierexpansionTemplate = ({
           header={
             <span className=" d-flex">
               InTransit
-              {MultiSelectFilter("inTransit", intransit_, tblFilter.inTransit, "InTransit")}
+              {MultiSelectFilter(
+                "inTransit",
+                intransit_,
+                tblFilter.inTransit,
+                "InTransit"
+              )}
               {sort("inTransit")}
             </span>
           }
           body={bodyTemplateInTransit}
           bodyClassName="custom-cell"
-          style={{ paddingLeft: "10px", paddingRight: "10px",paddingBottom:"1.25rem",paddingTop:"1.25rem" }}
+          style={{
+            paddingLeft: "10px",
+            paddingRight: "10px",
+            paddingBottom: "1.5rem",
+            paddingTop: "1.5rem",
+          }}
         ></Column>
         <Column
           field="delivered"
           header={
             <span className=" d-flex">
               Delivered
-              {MultiSelectFilter("delivered", delivered_, tblFilter.delivered, "Delivered")}
+              {MultiSelectFilter(
+                "delivered",
+                delivered_,
+                tblFilter.delivered,
+                "Delivered"
+              )}
               {sort("delivered")}
             </span>
           }
@@ -934,9 +1023,15 @@ const SupplierexpansionTemplate = ({
           body={destinationBodyTemplate}
           style={{ width: "185px", paddingLeft: "10px", paddingRight: "10px" }}
         ></Column> */}
- 
+        <Column
+          field="action"
+          body={actionBodyTemplate}
+          header={<span>Action</span>}
+          className=" text-start"
+          headerStyle={{ paddingLeft: "10px" }}
+        ></Column>
       </DataTable>
-      {/* {showMore && (
+      {showMore && (
         <span
           role="button"
           className="show-more"
@@ -949,7 +1044,19 @@ const SupplierexpansionTemplate = ({
         >
           {showAllData ? "Show Less" : "Show More"}
         </span>
-      )} */}
+      )}
+      {/* <Dialog
+        open={showcountry}
+        onClose={() => setShowcountry(false)}
+        aria-labelledby="responsive-dialog-title"
+        id="vessel_modal_section"
+        maxWidth={"lg"}
+        fullWidth={true}
+      >
+        <DialogContent>
+          <CountryexpansionTemplate filterDatas={filterData} />
+        </DialogContent>
+      </Dialog> */}
 
       {/* <span role="button"  className="show-more" onClick={()=>{return (setshowAllData(!showAllData),setscrollHeight((prev)=>prev==="653px"?"1243px":"653px"))}} >
             {showAllData ? "Show Less" : "Show More"}
@@ -970,4 +1077,4 @@ const SupplierexpansionTemplate = ({
   );
 };
 
-export default SupplierexpansionTemplate;
+export default CountryTab;
