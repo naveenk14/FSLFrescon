@@ -117,7 +117,6 @@ const OrderSummary = ({ open, handleClose }) => {
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
       <DialogTitle>
-        {/ PO Summary /}
         <IconButton
           style={{ position: "absolute", right: 10, top: 10 }}
           onClick={handleClose}

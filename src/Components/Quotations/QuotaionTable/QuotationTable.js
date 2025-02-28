@@ -46,15 +46,16 @@ const QuotationTable = ({
   scrollHeight,
   setscrollHeight,
   popoverVisible,
-  setPopoverVisible
+  setPopoverVisible,
+  globalFilter,
+  setGlobalFilter,
+  filterValue
   // setSelectedDropdownItem,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [requstedModal, setrequstedModal] = useState(false);
-  const [filterValue, setFilterValue] = useState(30);
   const [filteredData, setFilteredData] = useState(filterData);
-  const [globalFilter, setGlobalFilter] = useState("");
   const [clicked, setClicked] = useState(false);
   const [data, setData] = useState(filteredData);
   const [selectfield, setselectfield] = useState("");
@@ -211,26 +212,7 @@ const QuotationTable = ({
     dispatch(QuotationRequest({ payload }));
   }, [dispatch, filterValue]);
 
-  useEffect(() => {
-    const lowercasedFilter = globalFilter.toLowerCase();
-    const filteredData = quotationData?.filter((item) =>
-      Object.keys(item).some((key) =>
-        String(item[key]).toLowerCase().includes(lowercasedFilter)
-      )
-    );
-    setFilteredData(filteredData);
-    setCurrentPage(1);
-  }, [globalFilter, quotationData]);
-
-  useEffect(() => {
-    const filterDaysMap = {
-      "Past 30 Days": 30,
-      "Past 3 Months": 91,
-      "Past 6 Months": 182,
-      "Past 1 Year": 365,
-    };
-    setFilterValue(filterDaysMap[selectedDropdownItem]);
-  }, [selectedDropdownItem]);
+  
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -608,7 +590,7 @@ const QuotationTable = ({
     return (
       <div
         className="no-options "
-        style={{ alignSelf: "center", height: "353px" }}
+        style={{ alignSelf: "center", height: "595px" }}
       >
         No Data Found
       </div>
@@ -690,7 +672,7 @@ const QuotationTable = ({
     >
       <DataTable
         value={currentPageData}
-        // style={{ height: "420px" }}
+        style={{ minHeight: "653px" }}
         scrollable={showAllData}
         scrollHeight={scrollHeight}
         header={renderHeader}

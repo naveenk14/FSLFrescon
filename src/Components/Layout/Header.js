@@ -140,7 +140,7 @@ const Header = ({ setShowText, setShowmap,setShowReselt }) => {
         minWidth: "1255px",
         width: "100%",
         height: "76px",
-        zIndex: "1001",
+        zIndex: "1000",
         overflowY: "hidden",
         background: "#181e25",
         padding: "20px 24px 20px 24px",
