@@ -424,7 +424,7 @@ const ShipmentHeader = ({ rowDatas }) => {
                     
                   </h6>
                   {/* <Button variant="contained" >Open Order Summary</Button> */}
-                  <img src={MoreDot} className="mx-2" onClick={() => setOpen(true)} />
+                  <img src={MoreDot} role="button" className="mx-2" onClick={() => setOpen(true)} />
                   <OrderSummary open={open} handleClose={() => setOpen(false)} />
                 </div>
               </div>
